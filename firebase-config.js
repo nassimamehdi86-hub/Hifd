@@ -1,10 +1,7 @@
-/* ضع بيانات مشروع Firebase هنا (Project settings ⚙️ ← Your apps ← Web).
-   إن بقيت القيم كما هي، تُحفظ النتائج في جهاز التلميذ فقط. */
 window.FIREBASE_CONFIG = {
-  apiKey: "ضع_المفتاح",
-  authDomain: "ضع_النطاق",
-  projectId: "ضع_المعرف",
-  appId: "ضع_معرف_التطبيق"
+  apiKey: "انسخ_المفتاح_من_Firebase",
+  authDomain: "hifz-90665.firebaseapp.com",
+  projectId: "hifz-90665",
+  appId: "انسخ_المعرف_من_Firebase"
 };
-/* الرقم السري للوحة الأستاذ — غيّره قبل النشر (ملاحظة: يظهر في الكود، فهو حماية بسيطة فقط) */
-window.ADMIN_PIN="2580";
+window.ADMIN_PIN = "2580";
