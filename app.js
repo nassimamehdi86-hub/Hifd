@@ -29,9 +29,24 @@ function subject(s){
 }
 function lesson(s,l){
   const r=prog()[l.id];
-  app.innerHTML=`<h2>${l.title}</h2><p>${l.qs.length?`${l.qs.length} سؤالًا تغطي نقاط الدرس كلها.${r?` آخر نتيجة: ${r.pct}%`:''}`:'لم تُضف أسئلة هذا الدرس بعد.'}</p>
-  <div class="acts"><a class="btn alt" href="${l.pdf}" target="_blank" rel="noopener">📄 ملف الدرس</a>${l.qs.length?'<div class="btn" id="go">ابدأ الاختبار</div>':''}</div>`;
+  app.innerHTML=`<h2>${l.title}</h2>${l.qs.length?`<div class="acts"><div class="btn" id="go">ابدأ الاختبار (${l.qs.length} سؤالًا)</div></div>${r?`<p class="hint">آخر نتيجة: ${r.pct}%</p>`:''}`:'<p class="hint">لم تُضف أسئلة هذا الدرس بعد.</p>'}
+  <div id="pdf" class="pdf"><p class="hint">جارٍ تحميل الدرس…</p></div>
+  <div class="acts"><a class="btn alt" href="${l.pdf}" target="_blank" rel="noopener">فتح الملف في صفحة مستقلة</a></div>`;
   if(l.qs.length)$('#go').onclick=()=>go(()=>quiz(s,l),l.title,s.color);
+  renderPdf(l.pdf,$('#pdf'));
+}
+async function renderPdf(url,box){
+  try{
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const pdf=await pdfjsLib.getDocument(url).promise;
+    for(let n=1;n<=pdf.numPages;n++){
+      if(!box.isConnected)return;
+      const pg=await pdf.getPage(n),v0=pg.getViewport({scale:1}),sc=box.clientWidth/v0.width,v=pg.getViewport({scale:sc*(devicePixelRatio||1)});
+      const c=document.createElement('canvas');c.width=v.width;c.height=v.height;box.appendChild(c);
+      await pg.render({canvasContext:c.getContext('2d'),viewport:v}).promise;
+      if(n===1)box.querySelector('.hint')?.remove();
+    }
+  }catch(e){box.innerHTML='<p class="hint">تعذّر عرض الملف. تأكد أن الملف موجود في مجلد pdf/ بالاسم الصحيح.</p>'}
 }
 function quiz(s,l){
   let idx=l.qs.map((_,k)=>k),i=0,right=0,wrong=[];
