@@ -73,7 +73,7 @@ async function renderPdf(url,box){
   }
 }
 function quiz(s,l){
-  let idx=l.qs.map((_,k)=>k),i=0,right=0,wrong=[],combo=0,gain=0;
+  let idx=shuffle(l.qs.map((_,k)=>k)),i=0,right=0,wrong=[],combo=0,gain=0;
   const draw=()=>{
     if(i>=idx.length)return done();
     const[q,a,...w]=l.qs[idx[i]],opts=shuffle([a,...w]);
@@ -91,15 +91,16 @@ function quiz(s,l){
     if(idx.length===l.qs.length)save(s,l,right,pct);
     if(pct>=90)gain+=20;addXp(gain);
     const n=stars(pct);
-    app.innerHTML=`<div class="res"><div class="big">${n>=2?'🏆':'💪'}</div><h2>${pct}%</h2><div class="st">${starsHtml(n)}</div><p>${right} صحيحة من ${idx.length} · ‎+${gain} نقطة</p><p class="msg">${pct>=90?'أسطوري! أنت بطل هذا الدرس':pct>=70?'عمل رائع، اقتربت من القمة!':'بداية جيدة، أعد المحاولة وستتفوق!'}</p><div class="acts">${wrong.length?'<div class="btn alt" id="re">أعد الأخطاء</div>':''}<div class="btn" id="bk">الدروس</div></div></div>`;
+    app.innerHTML=`<div class="res"><div class="big">${n>=2?'🏆':'💪'}</div><h2>${pct}%</h2><div class="st">${starsHtml(n)}</div><p>${right} صحيحة من ${idx.length} · ‎+${gain} نقطة</p><p class="msg">${pct>=90?'أسطوري! أنت بطل هذا الدرس':pct>=70?'عمل رائع، اقتربت من القمة!':'بداية جيدة، أعد المحاولة وستتفوق!'}</p><div class="acts">${wrong.length?'<div class="btn alt" id="re">أعد الأخطاء</div>':''}<div class="btn" id="again">محاولة جديدة 🔄</div></div><div class="acts"><div class="btn alt" id="bk">الدروس</div></div></div>`;
     if(pct>=70)confetti();
-    if(wrong.length)$('#re').onclick=()=>{idx=wrong;wrong=[];i=0;right=0;gain=0;draw()};
+    $('#again').onclick=()=>quiz(s,l);
+    if(wrong.length)$('#re').onclick=()=>{idx=shuffle(wrong);wrong=[];i=0;right=0;gain=0;draw()};
     $('#bk').onclick=()=>{hist=hist.slice(0,2);show()};
   };
   draw();
 }
 function save(s,l,right,pct){
-  const p=prog();p[l.id]={pct,at:Date.now()};store.set('prog',p);
+  const p=prog();p[l.id]={pct:Math.max(pct,(p[l.id]||{}).pct||0),at:Date.now()};store.set('prog',p);
   if(db)db.collection('results').add({student:name,subject:s.name,lessonId:l.id,lesson:l.title,right,total:l.qs.length,percent:pct,at:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
 }
 async function admin(){
