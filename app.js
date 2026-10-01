@@ -27,6 +27,12 @@ async function install(){
   if(deferred){deferred.prompt();await deferred.userChoice;deferred=null;const b=$('#inst');if(b)b.remove();return}
   alert(/iphone|ipad|ipod/i.test(navigator.userAgent)?'في آيفون: اضغط زر المشاركة في Safari ثم «إضافة إلى الشاشة الرئيسية».':'اضغط على قائمة المتصفح ⋮ ثم «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».');
 }
+let muted=store.get('mute',false),AC=null;
+function tone(f,t,d,ty='sine',v=.18){if(muted)return;try{AC=AC||new(window.AudioContext||webkitAudioContext)();if(AC.state==='suspended')AC.resume();const o=AC.createOscillator(),g=AC.createGain(),s=AC.currentTime+t;o.type=ty;o.frequency.setValueAtTime(f,s);g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(AC.destination);o.start(s);o.stop(s+d)}catch(e){}}
+const SFX={tap:()=>tone(520,0,.06,'triangle',.1),ok:c=>{const k=Math.min(c,6)*45;tone(660+k,0,.12);tone(880+k,.1,.22)},no:()=>{tone(220,0,.25,'sawtooth',.1);tone(165,.14,.3,'sawtooth',.1)},win:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,i*.11,.35,'triangle',.2)),lose:()=>{tone(392,0,.2,'triangle');tone(330,.18,.35,'triangle')}};
+const snd=$('#snd');snd.textContent=muted?'🔇':'🔊';
+snd.onclick=()=>{muted=!muted;store.set('mute',muted);snd.textContent=muted?'🔇':'🔊';SFX.tap()};
+document.addEventListener('click',e=>{if(e.target.closest('.btn,.tile,.node,#back'))SFX.tap()});
 function askName(force){
   if(name&&!force)return;
   app.innerHTML=`<div class="res"><h2>مرحبًا</h2><p>اكتب اسمك ولقبك لتُحفظ نتائجك</p><input id="n" value="${esc(name)}" placeholder="الاسم واللقب"><div class="btn" id="ok">ابدأ</div></div>`;
@@ -81,7 +87,7 @@ function quiz(s,l){
     app.querySelectorAll('.opt').forEach((b,k)=>b.onclick=()=>{
       app.querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(opts[j]===a)x.classList.add('ok')});
       const good=opts[k]===a;
-      if(good){right++;combo++;gain+=10;b.classList.add('pop')}else{b.classList.add('no');wrong.push(idx[i]);combo=0}
+      if(good){right++;combo++;gain+=10;b.classList.add('pop');SFX.ok(combo)}else{b.classList.add('no');wrong.push(idx[i]);combo=0;SFX.no()}
       $('#nx').innerHTML=`<div class="fb ${good?'g':'b'}">${good?pick(PRAISE)+' ⭐ +10':pick(OOPS)}</div><div class="btn" id="n">التالي</div>`;
       $('#n').onclick=()=>{i++;draw()};scrollTo(0,document.body.scrollHeight);
     });
@@ -92,7 +98,7 @@ function quiz(s,l){
     if(pct>=90)gain+=20;addXp(gain);
     const n=stars(pct);
     app.innerHTML=`<div class="res"><div class="big">${n>=2?'🏆':'💪'}</div><h2>${pct}%</h2><div class="st">${starsHtml(n)}</div><p>${right} صحيحة من ${idx.length} · ‎+${gain} نقطة</p><p class="msg">${pct>=90?'أسطوري! أنت بطل هذا الدرس':pct>=70?'عمل رائع، اقتربت من القمة!':'بداية جيدة، أعد المحاولة وستتفوق!'}</p><div class="acts">${wrong.length?'<div class="btn alt" id="re">أعد الأخطاء</div>':''}<div class="btn" id="again">محاولة جديدة 🔄</div></div><div class="acts"><div class="btn alt" id="bk">الدروس</div></div></div>`;
-    if(pct>=70)confetti();
+    if(pct>=70){confetti();SFX.win()}else SFX.lose();
     $('#again').onclick=()=>quiz(s,l);
     if(wrong.length)$('#re').onclick=()=>{idx=shuffle(wrong);wrong=[];i=0;right=0;gain=0;draw()};
     $('#bk').onclick=()=>{hist=hist.slice(0,2);show()};
