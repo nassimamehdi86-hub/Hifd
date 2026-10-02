@@ -11,7 +11,7 @@ const show=()=>{const[f,t,c]=hist[hist.length-1];f();ttl.textContent=t;color(c);
 const go=(fn,t,c)=>{hist.push([fn,t,c]);show()};
 back.onclick=()=>{hist.pop();show()};
 who.onclick=()=>askName(true);
-const PAL={hist:'#FF9F1C',geo:'#0FB5A6',civ:'#6C4DF6',isl:'#22B35E',sci:'#FF4D8D'},ICON={hist:'📜',geo:'🌍',civ:'🏛️',isl:'🕌',sci:'🔬'};
+const PAL={hist:'#FF9F1C',geo:'#0FB5A6',civ:'#6C4DF6',isl:'#22B35E',sci:'#FF4D8D',math:'#A855F7',phy:'#0EA5E9'},ICON={hist:'📜',geo:'🌍',civ:'🏛️',isl:'🕌',sci:'🔬',math:'📐',phy:'⚛️'};
 SUBJECTS.forEach(s=>s.color=PAL[s.id]);
 const PRAISE=['أحسنت!','ممتاز!','رائع!','يا بطل!','مذهل!'],OOPS=['لا بأس، تعلّم منها!','قريبًا تصيبها!','حاول في الجولة القادمة!'];
 const pick=a=>a[Math.floor(Math.random()*a.length)];
