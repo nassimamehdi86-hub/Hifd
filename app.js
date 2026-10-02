@@ -1,6 +1,6 @@
 const $=s=>document.querySelector(s),app=$('#app'),ttl=$('#title'),back=$('#back'),who=$('#who');
-let db=null,auth=null,hist=[];
-try{const c=window.FIREBASE_CONFIG;if(c&&!/ضع_/.test(c.projectId)){firebase.initializeApp(c);db=firebase.firestore();auth=firebase.auth()}}catch(e){}
+let db=null,hist=[];
+try{const c=window.FIREBASE_CONFIG;if(c&&!/ضع_/.test(c.projectId)){firebase.initializeApp(c);db=firebase.firestore()}}catch(e){}
 const store={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
 let name=store.get('name','');
 const prog=()=>store.get('prog',{});
@@ -120,11 +120,13 @@ function save(s,l,right,pct){
   const p=prog();p[l.id]={pct:Math.max(pct,(p[l.id]||{}).pct||0),at:Date.now()};store.set('prog',p);
   if(db)db.collection('results').add({student:name,subject:s.name,lessonId:l.id,lesson:l.title,right,total:l.qs.length,percent:pct,at:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
 }
+let unlocked=false;
 function adminGate(){
   if(!db){app.innerHTML='<div class="res"><p>اربط Firebase في firebase-config.js أولًا.</p></div>';return}
-  if(auth.currentUser)return admin();
-  app.innerHTML='<div class="res"><h2>دخول الأستاذ</h2><input id="em" type="email" dir="ltr" placeholder="البريد الإلكتروني"><input id="pw" type="password" dir="ltr" placeholder="كلمة السر"><div class="btn" id="lg">دخول</div><p class="hint" id="er"></p></div>';
-  $('#lg').onclick=async()=>{try{await auth.signInWithEmailAndPassword($('#em').value.trim(),$('#pw').value);admin()}catch(e){$('#er').textContent='بيانات الدخول غير صحيحة'}};
+  if(unlocked)return admin();
+  app.innerHTML='<div class="res"><h2>دخول الأستاذ</h2><input id="pw" type="password" inputmode="numeric" dir="ltr" placeholder="الرقم السري"><div class="btn" id="lg">دخول</div><p class="hint" id="er"></p></div>';
+  const go2=()=>{if($('#pw').value===String(window.ADMIN_PIN||'')&&window.ADMIN_PIN){unlocked=true;admin()}else $('#er').textContent='الرقم السري غير صحيح'};
+  $('#lg').onclick=go2;$('#pw').onkeydown=e=>{if(e.key==='Enter')go2()};
 }
 async function admin(){
   if(!db){app.innerHTML='<div class="res"><p>اربط Firebase في firebase-config.js لعرض نتائج التلاميذ.</p></div>';return}
@@ -134,10 +136,11 @@ async function admin(){
     const rows=sn.docs.map(d=>({id:d.id,...d.data()})),by={};
     rows.forEach(r=>{(by[r.student]??=[]).push(r.percent)});
     const avg=Object.entries(by).map(([n,a])=>`<tr><td>${esc(n)}</td><td>${a.length}</td><td>${Math.round(a.reduce((x,y)=>x+y,0)/a.length)}%</td></tr>`).join('');
-    app.innerHTML=`<h2>استيراد الامتحانات</h2><textarea id="js" rows="5" dir="ltr" placeholder='[{"id":"h-2023-1","l":["h11"],"y":2023,"t":"...","a":"..."}]' style="width:100%;border-radius:16px;border:3px solid var(--c);padding:10px"></textarea><div class="acts"><div class="btn" id="imp">رفع إلى Firestore</div><div class="btn alt" id="out">خروج</div></div><p class="hint" id="ims"></p><h2>المعدل لكل تلميذ</h2><div class="tw"><table><tr><th>التلميذ</th><th>الاختبارات</th><th>المعدل</th></tr>${avg}</table></div>
+    app.innerHTML=`<h2>استيراد الامتحانات</h2><textarea id="js" rows="5" dir="ltr" placeholder='[{"id":"h-2023-1","l":["h11"],"y":2023,"t":"...","a":"..."}]' style="width:100%;border-radius:16px;border:3px solid var(--c);padding:10px"></textarea><label class="btn alt" style="display:block;text-align:center;margin:10px 0;cursor:pointer">📂 اختيار ملف exams-import.json<input type="file" id="fl" accept=".json,application/json" style="display:none"></label><div class="acts"><div class="btn" id="imp">رفع إلى Firestore</div><div class="btn alt" id="out">خروج</div></div><p class="hint" id="ims"></p><h2>المعدل لكل تلميذ</h2><div class="tw"><table><tr><th>التلميذ</th><th>الاختبارات</th><th>المعدل</th></tr>${avg}</table></div>
     <h2>آخر النتائج</h2><div class="tw"><table><tr><th>التلميذ</th><th>المادة</th><th>الدرس</th><th>النتيجة</th><th>التاريخ</th><th></th></tr>`+
     rows.map(r=>`<tr><td>${esc(r.student)}</td><td>${esc(r.subject)}</td><td>${esc(r.lessonId)}</td><td>${r.percent}%</td><td>${r.at?r.at.toDate().toLocaleDateString('ar'):''}</td><td><a data-d="${r.id}" style="cursor:pointer">🗑</a></td></tr>`).join('')+'</table></div>';
-    $('#out').onclick=async()=>{await auth.signOut();hist=hist.slice(0,1);show()};
+    $('#out').onclick=()=>{unlocked=false;hist=hist.slice(0,1);show()};
+    $('#fl').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const t=await f.text();JSON.parse(t);$('#js').value=t;$('#ims').textContent='تم تحميل «'+f.name+'» ✓ — اضغط الآن «رفع إلى Firestore»'}catch(err){$('#ims').textContent='الملف غير صالح: '+err.message}};
     $('#imp').onclick=async()=>{try{const a=JSON.parse($('#js').value),b=db.batch();a.forEach((e,i)=>b.set(db.collection('exams').doc(e.id||'x'+Date.now()+i),{l:[].concat(e.l),y:e.y,s:e.s||'',t:e.t,a:e.a||''}));await b.commit();$('#ims').textContent='تم رفع '+a.length+' تمرينًا ✓'}catch(err){$('#ims').textContent='خطأ: '+err.message}};
     app.querySelectorAll('[data-d]').forEach(a=>a.onclick=async()=>{if(confirm('حذف هذه النتيجة؟')){await db.collection('results').doc(a.dataset.d).delete();admin()}});
   }catch(e){app.innerHTML='<div class="res"><p>تعذّر التحميل. تحقق من القواعد ومن تفعيل الدخول بالبريد في Firebase.</p></div>'}
