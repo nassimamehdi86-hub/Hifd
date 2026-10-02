@@ -42,7 +42,7 @@ function home(){
   const t=st(),p=prog(),total=Object.values(p).reduce((x,r)=>x+stars(r.pct),0);
   app.innerHTML=`<div class="hero"><div class="hi">أهلًا ${esc(name)} 👋<small>هيا نحفظ ونجمع النجوم!</small></div><div class="chips"><span>🔥 ${t.streak} يوم</span><span>⭐ ${total}</span><span>🏅 مستوى ${lvl(t.xp)}</span></div><div class="xp"><i style="width:${t.xp%100}%"></i></div></div>${standalone()?'':'<div class="btn inst" id="inst">📲 ثبّت التطبيق على هاتفك</div>'}<div class="tiles">`+
   SUBJECTS.map(s=>{const ls=s.sections.flatMap(x=>x.lessons),d=ls.filter(l=>p[l.id]&&p[l.id].pct>=70).length;
-    return `<div class="tile" style="--c:${s.color}" data-id="${s.id}"><span class="em">${ICON[s.id]}</span><b>${s.name}</b><small>${d} / ${ls.length} دروس</small></div>`}).join('')+'</div><div class="lnk" id="adm">دخول الأستاذ</div>';
+    return `<div class="tile" style="--c:${s.color}" data-id="${s.id}"><span class="em">${ICON[s.id]}</span><b>${s.name}</b><small>${d} / ${ls.length} دروس</small></div>`}).join('')+'</div><div class="lnk" id="adm" translate="no">دخول الأستاذ</div>';
   if($('#inst'))$('#inst').onclick=install;
   app.querySelectorAll('.tile').forEach(e=>e.onclick=()=>{const s=SUBJECTS.find(x=>x.id==e.dataset.id);go(()=>subject(s),s.name,s.color)});
   $('#adm').onclick=()=>go(adminGate,'لوحة الأستاذ','#3b2f6b');
