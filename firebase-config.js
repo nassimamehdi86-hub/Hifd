@@ -5,5 +5,3 @@ window.FIREBASE_CONFIG = {
   projectId: "hifz-90665",
   appId: "ضع_معرف_التطبيق"
 };
-/* الرقم السري للوحة الأستاذ — غيّره */
-window.ADMIN_PIN = "2580";

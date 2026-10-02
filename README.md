@@ -2,7 +2,7 @@
 
 1. **المحتوى**: عدّل `data.js` (مادة ← مقاطع ← دروس ← أسئلة وأجوبة) وضع ملفات PDF في مجلد `pdf/`.
 2. **قاعدة البيانات**: أنشئ مشروع Firebase ثم فعّل Firestore، وضع بياناته في `firebase-config.js`.
-   قواعد Firestore المقترحة: `match /results/{id} { allow create, read, delete: if true; }`
+   قواعد Firestore المقترحة: `match /results/{id} { allow create: if true; allow read, delete: if request.auth != null; }`
 3. **النشر**: ارفع المجلد إلى مستودع GitHub ثم Settings ← Pages ← Branch: main.
 النتائج تُحفظ في مجموعة `results` (الاسم، المادة، الدرس، النتيجة، التاريخ).
 
@@ -14,3 +14,7 @@
 
 ## كتابة الخيارات
 اجعل الخيارات الخاطئة قريبة من الصحيح: بدّل فيها أجزاء من الدرس نفسه (مراحل مقلوبة، تعريف نقطة مكان أخرى...) حتى لا يخمّن التلميذ الجواب بالاستبعاد.
+
+## الامتحانات (Firestore)
+قواعد إضافية: `match /exams/{id} { allow read: if true; allow write: if request.auth != null; }`
+الدخول للأستاذ ببريد وكلمة سر: Firebase ← Authentication ← Sign-in method ← Email/Password، ثم Users ← Add user.
