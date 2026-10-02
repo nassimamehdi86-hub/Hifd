@@ -57,11 +57,12 @@ function subject(s){
 const videoHtml=([id,s=0,e=0])=>`<h2>🎬 شرح الدرس بالفيديو</h2><div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0${s?'&start='+s:''}${e?'&end='+e:''}" title="فيديو الدرس" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div><p class="hint"><a href="https://youtu.be/${id}${s?'?t='+s:''}" target="_blank" rel="noopener">إن لم يعمل الفيديو هنا، شاهده على يوتيوب</a></p>`;
 function lesson(s,l){
   const r=prog()[l.id],ex=(window.EXAMS||[]).filter(e=>[].concat(e.l).includes(l.id));
-  app.innerHTML=`<h2>${l.title}</h2>${l.qs.length?`<div class="acts"><div class="btn" id="go">ابدأ الاختبار (${l.qs.length} سؤالًا)</div></div>${r?`<p class="hint">آخر نتيجة: ${r.pct}%</p>`:''}`:'<p class="hint">لم تُضف أسئلة هذا الدرس بعد.</p>'}
+  app.innerHTML=`<h2>${l.title}</h2>${l.qs.length?`<div class="acts"><div class="btn" id="go">ابدأ الاختبار (${l.qs.length} سؤالًا)</div></div>${(()=>{const sv=qload();return sv&&sv.lid===l.id?`<div class="acts"><div class="btn alt" id="rs">⏯ تابع من حيث توقفت (${sv.i+1} / ${sv.idx.length})</div></div>`:''})()}${r?`<p class="hint">آخر نتيجة: ${r.last??r.pct}% · أفضل نتيجة: ${r.pct}%</p>`:''}`:'<p class="hint">لم تُضف أسئلة هذا الدرس بعد.</p>'}
   ${l.v?videoHtml(l.v):''}
   <div id="pdf" class="pdf"><p class="hint">جارٍ تحميل الدرس…</p></div>
   <div class="acts"><a class="btn alt" href="${l.pdf}" target="_blank" rel="noopener">فتح الملف في صفحة مستقلة</a></div><div id="exb"></div>`;
   if(l.qs.length)$('#go').onclick=()=>go(()=>quiz(s,l),l.title,s.color);
+  if($('#rs'))$('#rs').onclick=()=>go(()=>quiz(s,l,true),l.title,s.color);
   const sx=list=>{const b=$('#exb');if(!list.length||!b)return;b.innerHTML=examHtml(list);bindAns(b)};
   sx(ex);
   if(db)db.collection('exams').where('l','array-contains',l.id).get().then(q=>{const ids=new Set(ex.map(e=>e.id));sx(ex.concat(q.docs.filter(d=>!ids.has(d.id)).map(d=>d.data())))}).catch(()=>{});
@@ -89,37 +90,74 @@ async function renderPdf(url,box){
     box.innerHTML=`<p class="hint">تعذّر عرض الملف داخل التطبيق.<br>${esc(why)}</p><object data="${url}" type="application/pdf" width="100%" height="500"></object>`;
   }
 }
-function quiz(s,l){
-  let idx=shuffle(l.qs.map((_,k)=>k)),i=0,right=0,wrong=[],combo=0,gain=0;
+const qsave=S=>store.set('quiz',S),qload=()=>store.get('quiz',null),qclear=()=>localStorage.removeItem('quiz');
+function quiz(s,l,resume){
+  let S=resume?qload():null;
+  if(!S||S.lid!==l.id||S.n!==l.qs.length){
+    S={sid:s.id,lid:l.id,n:l.qs.length,idx:shuffle(l.qs.map((_,k)=>k)),i:0,right:0,wrong:[],combo:0,gain:0,round:0,opts:null,sel:null};
+  }
   const draw=()=>{
-    if(i>=idx.length)return done();
-    const[q,a,...w]=l.qs[idx[i]],opts=shuffle([a,...w]);
-    app.innerHTML=`<div class="bar"><i style="width:${i/idx.length*100}%"></i></div><p class="cnt">${i+1} / ${idx.length}${combo>1?` <span class="combo">🔥 ×${combo}</span>`:''}</p><div class="qbox">${esc(q)}</div>`+opts.map((o,k)=>`<button class="opt"><span class="ltr">${'أبجد'[k]}</span>${esc(o)}</button>`).join('')+'<div id="nx"></div>';
-    app.querySelectorAll('.opt').forEach((b,k)=>b.onclick=()=>{
-      app.querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(opts[j]===a)x.classList.add('ok')});
-      const good=opts[k]===a;
-      if(good){right++;combo++;gain+=10;b.classList.add('pop');SFX.ok(combo)}else{b.classList.add('no');wrong.push(idx[i]);combo=0;SFX.no()}
+    if(S.i>=S.idx.length)return done();
+    const item=l.qs[S.idx[S.i]],q=item[0],a=item[1];
+    if(!S.opts)S.opts=shuffle(item.slice(1));
+    qsave(S);
+    const opts=S.opts;
+    app.innerHTML=`<div class="bar"><i style="width:${S.i/S.idx.length*100}%"></i></div><p class="cnt">${S.i+1} / ${S.idx.length}${S.combo>1?` <span class="combo">🔥 ×${S.combo}</span>`:''}</p><div class="qbox">${esc(q)}</div>`+opts.map((o,k)=>`<button class="opt"><span class="ltr">${'أبجد'[k]}</span>${esc(o)}</button>`).join('')+'<div id="nx"></div>';
+    const mark=k=>{
+      const good=opts[k]===a,bs=app.querySelectorAll('.opt');
+      bs.forEach((x,j)=>{x.disabled=true;if(opts[j]===a)x.classList.add('ok')});
+      bs[k].classList.add(good?'pop':'no');
       $('#nx').innerHTML=`<div class="fb ${good?'g':'b'}">${good?pick(PRAISE)+' ⭐ +10':pick(OOPS)}</div><div class="btn" id="n">التالي</div>`;
-      $('#n').onclick=()=>{i++;draw()};scrollTo(0,document.body.scrollHeight);
+      $('#n').onclick=()=>{S.i++;S.opts=null;S.sel=null;qsave(S);draw()};
+      scrollTo(0,document.body.scrollHeight);
+    };
+    app.querySelectorAll('.opt').forEach((b,k)=>b.onclick=()=>{
+      const good=opts[k]===a;
+      if(good){S.right++;S.combo++;S.gain+=10;SFX.ok(S.combo)}else{S.wrong.push(S.idx[S.i]);S.combo=0;SFX.no()}
+      S.sel=k;qsave(S);mark(k);
     });
+    if(S.sel!=null)mark(S.sel);   /* استعادة سؤال أُجيب عنه قبل إعادة تحميل الصفحة */
   };
   const done=()=>{
-    const pct=Math.round(right/idx.length*100);
-    if(idx.length===l.qs.length)save(s,l,right,pct);
-    if(pct>=90)gain+=20;addXp(gain);
-    const n=stars(pct);
-    app.innerHTML=`<div class="res"><div class="big">${n>=2?'🏆':'💪'}</div><h2>${pct}%</h2><div class="st">${starsHtml(n)}</div><p>${right} صحيحة من ${idx.length} · ‎+${gain} نقطة</p><p class="msg">${pct>=90?'أسطوري! أنت بطل هذا الدرس':pct>=70?'عمل رائع، اقتربت من القمة!':'بداية جيدة، أعد المحاولة وستتفوق!'}</p><div class="acts">${wrong.length?'<div class="btn alt" id="re">أعد الأخطاء</div>':''}<div class="btn" id="again">محاولة جديدة 🔄</div></div><div class="acts"><div class="btn alt" id="bk">الدروس</div></div></div>`;
+    qclear();
+    const total=l.qs.length,correct=total-S.wrong.length,pct=Math.round(correct/total*100),corr=S.round>0;
+    save(s,l,correct,pct,corr?'correction':'attempt');
+    if(pct>=90)S.gain+=20;addXp(S.gain);
+    const n=stars(pct),gain=S.gain;
+    app.innerHTML=`<div class="res"><div class="big">${n>=2?'🏆':'💪'}</div><h2>${pct}%</h2><div class="st">${starsHtml(n)}</div><p>${corr?'النتيجة بعد التصحيح: ':''}${correct} صحيحة من ${total} · ‎+${gain} نقطة</p><p class="msg">${pct>=90?'أسطوري! أنت بطل هذا الدرس':pct>=70?'عمل رائع، اقتربت من القمة!':'بداية جيدة، أعد المحاولة وستتفوق!'}</p><p class="hint">✓ تم حفظ هذه النتيجة</p><div class="acts">${S.wrong.length?'<div class="btn alt" id="re">أعد الأخطاء</div>':''}<div class="btn" id="again">محاولة جديدة 🔄</div></div><div class="acts"><div class="btn alt" id="bk">الدروس</div></div></div>`;
     if(pct>=70){confetti();SFX.win()}else SFX.lose();
     $('#again').onclick=()=>quiz(s,l);
-    if(wrong.length)$('#re').onclick=()=>{idx=shuffle(wrong);wrong=[];i=0;right=0;gain=0;draw()};
+    if(S.wrong.length)$('#re').onclick=()=>{S.idx=shuffle(S.wrong);S.wrong=[];S.i=0;S.right=0;S.gain=0;S.combo=0;S.round++;S.opts=null;S.sel=null;draw()};
     $('#bk').onclick=()=>{hist=hist.slice(0,2);show()};
   };
   draw();
 }
-function save(s,l,right,pct){
-  const p=prog();p[l.id]={pct:Math.max(pct,(p[l.id]||{}).pct||0),at:Date.now()};store.set('prog',p);
-  if(db)db.collection('results').add({student:name,subject:s.name,lessonId:l.id,lesson:l.title,right,total:l.qs.length,percent:pct,at:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
+/* حفظ النتيجة: محليًا (آخر نتيجة + أفضل نتيجة) ثم في قائمة انتظار تُرسل إلى Firestore مع إعادة المحاولة عند فشل الاتصال */
+function save(s,l,correct,pct,kind){
+  const p=prog(),o=p[l.id]||{};
+  p[l.id]={pct:Math.max(pct,o.pct||0),last:pct,at:Date.now()};store.set('prog',p);
+  const q=store.get('outbox',[]);
+  q.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,8),ts:Date.now(),student:name,subject:s.name,lessonId:l.id,lesson:l.title,right:correct,total:l.qs.length,percent:pct,kind});
+  store.set('outbox',q);flush();
 }
+let flushing=false;
+async function flush(){
+  if(!db||flushing)return;flushing=true;
+  try{
+    let q=store.get('outbox',[]);
+    while(q.length){
+      const{id,ts,...d}=q[0];
+      try{
+        await Promise.race([db.collection('results').doc(id).set({...d,clientAt:ts,at:firebase.firestore.FieldValue.serverTimestamp()}),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),10000))]);
+      }catch(e){if(!(e&&e.code==='permission-denied'))throw e}
+      q=store.get('outbox',[]).filter(x=>x.id!==id);store.set('outbox',q);
+    }
+  }catch(e){}
+  flushing=false;
+}
+addEventListener('online',flush);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)flush()});
+setInterval(flush,60000);
 let unlocked=false;
 function adminGate(){
   if(!db){app.innerHTML='<div class="res"><p>اربط Firebase في firebase-config.js أولًا.</p></div>';return}
@@ -134,15 +172,24 @@ async function admin(){
   try{
     const sn=await db.collection('results').orderBy('at','desc').limit(500).get();
     const rows=sn.docs.map(d=>({id:d.id,...d.data()})),by={};
-    rows.forEach(r=>{(by[r.student]??=[]).push(r.percent)});
+    const seen=new Set();rows.forEach(r=>{const k=r.student+'|'+r.lessonId;if(seen.has(k))return;seen.add(k);(by[r.student]??=[]).push(r.percent)});
     const avg=Object.entries(by).map(([n,a])=>`<tr><td>${esc(n)}</td><td>${a.length}</td><td>${Math.round(a.reduce((x,y)=>x+y,0)/a.length)}%</td></tr>`).join('');
-    app.innerHTML=`<h2>استيراد الامتحانات</h2><textarea id="js" rows="5" dir="ltr" placeholder='[{"id":"h-2023-1","l":["h11"],"y":2023,"t":"...","a":"..."}]' style="width:100%;border-radius:16px;border:3px solid var(--c);padding:10px"></textarea><label class="btn alt" style="display:block;text-align:center;margin:10px 0;cursor:pointer">📂 اختيار ملف exams-import.json<input type="file" id="fl" accept=".json,application/json" style="display:none"></label><div class="acts"><div class="btn" id="imp">رفع إلى Firestore</div><div class="btn alt" id="out">خروج</div></div><p class="hint" id="ims"></p><h2>المعدل لكل تلميذ</h2><div class="tw"><table><tr><th>التلميذ</th><th>الاختبارات</th><th>المعدل</th></tr>${avg}</table></div>
-    <h2>آخر النتائج</h2><div class="tw"><table><tr><th>التلميذ</th><th>المادة</th><th>الدرس</th><th>النتيجة</th><th>التاريخ</th><th></th></tr>`+
-    rows.map(r=>`<tr><td>${esc(r.student)}</td><td>${esc(r.subject)}</td><td>${esc(r.lessonId)}</td><td>${r.percent}%</td><td>${r.at?r.at.toDate().toLocaleDateString('ar'):''}</td><td><a data-d="${r.id}" style="cursor:pointer">🗑</a></td></tr>`).join('')+'</table></div>';
+    app.innerHTML=`<h2>استيراد الامتحانات</h2><textarea id="js" rows="5" dir="ltr" placeholder='[{"id":"h-2023-1","l":["h11"],"y":2023,"t":"...","a":"..."}]' style="width:100%;border-radius:16px;border:3px solid var(--c);padding:10px"></textarea><label class="btn alt" style="display:block;text-align:center;margin:10px 0;cursor:pointer">📂 اختيار ملف exams-import.json<input type="file" id="fl" accept=".json,application/json" style="display:none"></label><div class="acts"><div class="btn" id="imp">رفع إلى Firestore</div><div class="btn alt" id="out">خروج</div></div><p class="hint" id="ims"></p><h2>المعدل لكل تلميذ</h2><div class="tw"><table><tr><th>التلميذ</th><th>الدروس</th><th>المعدل (آخر نتيجة لكل درس)</th></tr>${avg}</table></div>
+    <h2>آخر النتائج</h2><div class="tw"><table><tr><th>التلميذ</th><th>المادة</th><th>الدرس</th><th>النتيجة</th><th>النوع</th><th>التاريخ</th><th></th></tr>`+
+    rows.map(r=>`<tr><td>${esc(r.student)}</td><td>${esc(r.subject)}</td><td>${esc(r.lessonId)}</td><td>${r.percent}%</td><td>${r.kind==='correction'?'بعد التصحيح':'محاولة'}</td><td>${r.at?r.at.toDate().toLocaleString('ar'):''}</td><td><a data-d="${r.id}" style="cursor:pointer">🗑</a></td></tr>`).join('')+'</table></div>';
     $('#out').onclick=()=>{unlocked=false;hist=hist.slice(0,1);show()};
     $('#fl').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const t=await f.text();JSON.parse(t);$('#js').value=t;$('#ims').textContent='تم تحميل «'+f.name+'» ✓ — اضغط الآن «رفع إلى Firestore»'}catch(err){$('#ims').textContent='الملف غير صالح: '+err.message}};
     $('#imp').onclick=async()=>{try{const a=JSON.parse($('#js').value),b=db.batch();a.forEach((e,i)=>b.set(db.collection('exams').doc(e.id||'x'+Date.now()+i),{l:[].concat(e.l),y:e.y,s:e.s||'',t:e.t,a:e.a||''}));await b.commit();$('#ims').textContent='تم رفع '+a.length+' تمرينًا ✓'}catch(err){$('#ims').textContent='خطأ: '+err.message}};
     app.querySelectorAll('[data-d]').forEach(a=>a.onclick=async()=>{if(confirm('حذف هذه النتيجة؟')){await db.collection('results').doc(a.dataset.d).delete();admin()}});
   }catch(e){app.innerHTML='<div class="res"><p>تعذّر التحميل. تحقق من القواعد ومن تفعيل الدخول بالبريد في Firebase.</p></div>'}
 }
-if(name){who.textContent='👤';go(home,'حفظ')}else askName();
+function boot(){
+  if(!name)return askName();
+  who.textContent='👤';flush();
+  const S=qload();let s,l;
+  if(S){s=SUBJECTS.find(x=>x.id===S.sid);l=s&&s.sections.flatMap(x=>x.lessons).find(x=>x.id===S.lid)}
+  if(s&&l&&l.qs.length===S.n){
+    hist=[[home,'حفظ'],[()=>subject(s),s.name,s.color],[()=>lesson(s,l),l.title,s.color],[()=>quiz(s,l,true),l.title,s.color]];show();
+  }else{qclear();go(home,'حفظ')}
+}
+boot();
