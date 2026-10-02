@@ -82,4 +82,4 @@ const VMAP={
 };
 SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(VMAP[l.id])l.v=[VID,...VMAP[l.id]]})));
 /* فيديو مستقل للدرس الأول (كامل، بلا تحديد بداية ونهاية) */
-SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(l.id==='h11')l.v=['natQ3-elrTA']})));
+SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(l.id==='h11')l.v=['natQ3-elrTA'];if(l.id==='g11')l.v=['6ExS4AZ5og8']})));
