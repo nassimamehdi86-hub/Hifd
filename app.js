@@ -54,7 +54,7 @@ function subject(s){
   app.querySelectorAll('.node').forEach(e=>e.onclick=()=>{
     const l=s.sections.flatMap(x=>x.lessons).find(x=>x.id==e.dataset.l);go(()=>lesson(s,l),l.title,s.color)});
 }
-const videoHtml=([id,s,e])=>`<h2>🎬 شرح الدرس بالفيديو</h2><div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${id}?start=${s}&end=${e}&rel=0" title="فيديو الدرس" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div><p class="hint"><a href="https://youtu.be/${id}?t=${s}" target="_blank" rel="noopener">إن لم يعمل الفيديو هنا، شاهده على يوتيوب</a></p>`;
+const videoHtml=([id,s=0,e=0])=>`<h2>🎬 شرح الدرس بالفيديو</h2><div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0${s?'&start='+s:''}${e?'&end='+e:''}" title="فيديو الدرس" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div><p class="hint"><a href="https://youtu.be/${id}${s?'?t='+s:''}" target="_blank" rel="noopener">إن لم يعمل الفيديو هنا، شاهده على يوتيوب</a></p>`;
 function lesson(s,l){
   const r=prog()[l.id],ex=(window.EXAMS||[]).filter(e=>[].concat(e.l).includes(l.id));
   app.innerHTML=`<h2>${l.title}</h2>${l.qs.length?`<div class="acts"><div class="btn" id="go">ابدأ الاختبار (${l.qs.length} سؤالًا)</div></div>${r?`<p class="hint">آخر نتيجة: ${r.pct}%</p>`:''}`:'<p class="hint">لم تُضف أسئلة هذا الدرس بعد.</p>'}

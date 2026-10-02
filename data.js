@@ -81,3 +81,5 @@ const VMAP={
  h31:[tm(8,22,2),tm(17,48,2)],h32:[tm(17,48,2),tm(31,16,2)]
 };
 SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(VMAP[l.id])l.v=[VID,...VMAP[l.id]]})));
+/* فيديو مستقل للدرس الأول (كامل، بلا تحديد بداية ونهاية) */
+SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(l.id==='h11')l.v=['natQ3-elrTA']})));
