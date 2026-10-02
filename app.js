@@ -123,8 +123,8 @@ function quiz(s,l,resume){
     const total=l.qs.length,correct=total-S.wrong.length,pct=Math.round(correct/total*100),corr=S.round>0;
     save(s,l,correct,pct,corr?'correction':'attempt');
     if(pct>=90)S.gain+=20;addXp(S.gain);
-    const n=stars(pct),gain=S.gain;
-    app.innerHTML=`<div class="res"><div class="big">${n>=2?'🏆':'💪'}</div><h2>${pct}%</h2><div class="st">${starsHtml(n)}</div><p>${corr?'النتيجة بعد التصحيح: ':''}${correct} صحيحة من ${total} · ‎+${gain} نقطة</p><p class="msg">${pct>=90?'أسطوري! أنت بطل هذا الدرس':pct>=70?'عمل رائع، اقتربت من القمة!':'بداية جيدة، أعد المحاولة وستتفوق!'}</p><p class="hint">✓ تم حفظ هذه النتيجة</p><div class="acts">${S.wrong.length?'<div class="btn alt" id="re">أعد الأخطاء</div>':''}<div class="btn" id="again">محاولة جديدة 🔄</div></div><div class="acts"><div class="btn alt" id="bk">الدروس</div></div></div>`;
+    const best=(prog()[l.id]||{}).pct??pct,n=stars(best),gain=S.gain;
+    app.innerHTML=`<div class="res"><div class="big">${n>=2?'🏆':'💪'}</div><h2>${pct}%</h2><div class="st">${starsHtml(n)}</div><p>${corr?'النتيجة بعد التصحيح: ':''}${correct} صحيحة من ${total} · ‎+${gain} نقطة</p><p class="msg">${pct>=90?'أسطوري! أنت بطل هذا الدرس':pct>=70?'عمل رائع، اقتربت من القمة!':'بداية جيدة، أعد المحاولة وستتفوق!'}</p><p class="hint">✓ تم حفظ هذه النتيجة · أفضل نتيجة لك في هذا الدرس: <b>${best}%</b></p><div class="acts">${S.wrong.length?'<div class="btn alt" id="re">أعد الأخطاء</div>':''}<div class="btn" id="again">محاولة جديدة 🔄</div></div><div class="acts"><div class="btn alt" id="bk">الدروس</div></div></div>`;
     if(pct>=70){confetti();SFX.win()}else SFX.lose();
     $('#again').onclick=()=>quiz(s,l);
     if(S.wrong.length)$('#re').onclick=()=>{S.idx=shuffle(S.wrong);S.wrong=[];S.i=0;S.right=0;S.gain=0;S.combo=0;S.round++;S.opts=null;S.sel=null;draw()};
@@ -172,9 +172,16 @@ async function admin(){
   try{
     const sn=await db.collection('results').orderBy('at','desc').limit(500).get();
     const rows=sn.docs.map(d=>({id:d.id,...d.data()})),by={};
-    const seen=new Set();rows.forEach(r=>{const k=r.student+'|'+r.lessonId;if(seen.has(k))return;seen.add(k);(by[r.student]??=[]).push(r.percent)});
-    const avg=Object.entries(by).map(([n,a])=>`<tr><td>${esc(n)}</td><td>${a.length}</td><td>${Math.round(a.reduce((x,y)=>x+y,0)/a.length)}%</td></tr>`).join('');
-    app.innerHTML=`<div class="acts"><div class="btn alt" id="out">خروج</div></div><h2>المعدل لكل تلميذ</h2><div class="tw"><table><tr><th>التلميذ</th><th>الدروس</th><th>المعدل (آخر نتيجة لكل درس)</th></tr>${avg}</table></div>
+    const bl={};rows.forEach(r=>{const k=r.student+'|'+r.lessonId;bl[k]=Math.max(bl[k]??0,r.percent||0)});Object.entries(bl).forEach(([k,v])=>{(by[k.split('|')[0]]??=[]).push(v)});
+    const st2={},ls2={};
+    rows.forEach(r=>{
+      const cor=r.kind==='correction',s=st2[r.student]??={at:0,co:0,ls:new Set()},k=r.student+'|'+r.lessonId,l=ls2[k]??={n:r.student,t:r.lesson||r.lessonId,at:0,co:0,best:0};
+      if(cor){s.co++;l.co++}else{s.at++;l.at++}
+      s.ls.add(r.lessonId);l.best=Math.max(l.best,r.percent||0);
+    });
+    const avg=Object.entries(by).map(([n,a])=>{const s=st2[n]||{at:0,co:0,ls:new Set()};return `<tr><td>${esc(n)}</td><td>${s.ls.size}</td><td>${s.at}</td><td>${Math.max(0,s.at-s.ls.size)}</td><td>${s.co}</td><td>${Math.round(a.reduce((x,y)=>x+y,0)/a.length)}%</td></tr>`}).join('');
+    const det=Object.values(ls2).sort((x,y)=>x.n.localeCompare(y.n,'ar')).map(l=>`<tr><td>${esc(l.n)}</td><td>${esc(l.t)}</td><td>${l.at}</td><td>${Math.max(0,l.at-1)}</td><td>${l.co}</td><td>${l.best}%</td></tr>`).join('');
+    app.innerHTML=`<div class="acts"><div class="btn alt" id="out">خروج</div></div><h2>المعدل لكل تلميذ</h2><div class="tw"><table><tr><th>التلميذ</th><th>الدروس</th><th>المحاولات</th><th>إعادة البدء</th><th>التصحيحات</th><th>المعدل (أفضل نتيجة لكل درس)</th></tr>${avg}</table></div><h2>التفصيل حسب الدرس</h2><div class=\"tw\"><table><tr><th>التلميذ</th><th>الدرس</th><th>المحاولات</th><th>إعادة البدء</th><th>التصحيحات</th><th>الأفضل</th></tr>${det}</table></div>
     <h2>آخر النتائج</h2><div class="tw"><table><tr><th>التلميذ</th><th>المادة</th><th>الدرس</th><th>النتيجة</th><th>النوع</th><th>التاريخ</th><th></th></tr>`+
     rows.map(r=>`<tr><td>${esc(r.student)}</td><td>${esc(r.subject)}</td><td>${esc(r.lessonId)}</td><td>${r.percent}%</td><td>${r.kind==='correction'?'بعد التصحيح':'محاولة'}</td><td>${r.at?r.at.toDate().toLocaleString('ar'):''}</td><td><a data-d="${r.id}" style="cursor:pointer">🗑</a></td></tr>`).join('')+'</table></div>';
     $('#out').onclick=()=>{unlocked=false;hist=hist.slice(0,1);show()};
