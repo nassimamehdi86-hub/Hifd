@@ -64,7 +64,7 @@ function lesson(s,l){
   if(l.qs.length)$('#go').onclick=()=>go(()=>quiz(s,l),l.title,s.color);
   const sx=list=>{const b=$('#exb');if(!list.length||!b)return;b.innerHTML=examHtml(list);bindAns(b)};
   sx(ex);
-  if(db)db.collection('exams').where('l','array-contains',l.id).get().then(q=>sx(ex.concat(q.docs.map(d=>d.data())))).catch(()=>{});
+  if(db)db.collection('exams').where('l','array-contains',l.id).get().then(q=>{const ids=new Set(ex.map(e=>e.id));sx(ex.concat(q.docs.filter(d=>!ids.has(d.id)).map(d=>d.data())))}).catch(()=>{});
   renderPdf(l.pdf,$('#pdf'));
 }
 function examHtml(ex){
