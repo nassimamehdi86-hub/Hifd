@@ -115,15 +115,26 @@ function recite(s,l){
   };
   draw();
 }
+/* دمج نتائج التعرّف الصوتي دون تكرار: في بعض هواتف أندرويد تعيد كل نتيجة الكلمات السابقة، فنحذف الجزء المكرّر */
+function rmerge(acc,t){
+  t=String(t||'').trim();if(!t)return acc;if(!acc)return t;
+  const a=acc.split(/\s+/),b=t.split(/\s+/),na=a.map(rnorm),nb=b.map(rnorm);
+  if(nb.length>=2&&na.join(' ').indexOf(nb.join(' '))>=0)return acc;
+  for(let k=Math.min(na.length,nb.length);k>=1;k--){
+    let ok=true;for(let j=0;j<k;j++)if(na[na.length-k+j]!==nb[j]){ok=false;break}
+    if(ok)return a.concat(b.slice(k)).join(' ');
+  }
+  return acc+' '+t;
+}
 function initMic(btn,ta){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){btn.textContent='🎙️ غير متاح في هذا المتصفح';btn.style.opacity=.5;btn.onclick=()=>alert('التسميع الصوتي يعمل في Chrome. يمكنك كتابة إجابتك في الخانة.');return}
   let on=false,base='';
   btn.onclick=()=>{
     if(on){rstopMic();return}
-    const r=new SR();rMic=r;r.lang='ar-DZ';r.continuous=true;r.interimResults=true;
+    const r=new SR();rMic=r;r.lang='ar-DZ';r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
     base=ta.value?ta.value+' ':'';
-    r.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript+' ';ta.value=base+t.trim()};
+    r.onresult=e=>{let acc='';for(let i=0;i<e.results.length;i++)acc=rmerge(acc,e.results[i][0].transcript);ta.value=base+acc};
     const off=()=>{on=false;if(btn.isConnected)btn.textContent='🎙️ ابدأ التسميع';btn.classList.remove('live')};
     r.onend=off;r.onerror=off;
     try{r.start();on=true;btn.textContent='⏹ توقّف';btn.classList.add('live')}catch(e){off()}
