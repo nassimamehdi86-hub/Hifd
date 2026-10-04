@@ -7,9 +7,12 @@ const prog=()=>store.get('prog',{});
 const color=c=>document.documentElement.style.setProperty('--c',c||'#14161f');
 const shuffle=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const show=()=>{const[f,t,c]=hist[hist.length-1];f();ttl.textContent=t;color(c);back.hidden=hist.length<2;scrollTo(0,0)};
+let testActive=null;
+const show=()=>{testActive=null;const[f,t,c]=hist[hist.length-1];f();ttl.textContent=t;color(c);back.hidden=hist.length<2;scrollTo(0,0)};
 const go=(fn,t,c)=>{hist.push([fn,t,c]);show()};
-back.onclick=()=>{hist.pop();show()};
+back.onclick=()=>{
+  if(testActive){if(!confirm('ستُلغى كل إجاباتك ويبدأ الاختبار من الصفر. هل تريد الخروج؟'))return;testActive=null;localStorage.removeItem('rec');rstopMic()}
+  hist.pop();show()};
 who.onclick=()=>askName(true);
 const PAL={hist:'#FF9F1C',geo:'#0FB5A6',civ:'#6C4DF6',isl:'#22B35E',sci:'#FF4D8D',math:'#A855F7',phy:'#0EA5E9'},ICON={hist:'📜',geo:'🌍',civ:'🏛️',isl:'🕌',sci:'🔬',math:'📐',phy:'⚛️'};
 SUBJECTS.forEach(s=>s.color=PAL[s.id]);
@@ -40,17 +43,20 @@ function askName(force){
 }
 function home(){
   const t=st(),p=prog(),total=Object.values(p).reduce((x,r)=>x+stars(r.pct),0);
-  app.innerHTML=`<div class="hero"><div class="hi">أهلًا ${esc(name)} 👋<small>هيا نحفظ ونجمع النجوم!</small></div><div class="chips"><span>🔥 ${t.streak} يوم</span><span>⭐ ${total}</span><span>🏅 مستوى ${lvl(t.xp)}</span></div><div class="xp"><i style="width:${t.xp%100}%"></i></div></div>${standalone()?'':'<div class="btn inst" id="inst">📲 ثبّت التطبيق على هاتفك</div>'}<div class="tiles">`+
+  app.innerHTML=`<div class="hero"><div class="hi">أهلًا ${esc(name)} 👋<small>هيا نحفظ ونجمع النجوم!</small></div><div class="chips"><span>🔥 ${t.streak} يوم</span><span>⭐ ${total}</span><span>🏅 مستوى ${lvl(t.xp)}</span></div><div class="xp"><i style="width:${t.xp%100}%"></i></div></div>${todayBanner()}${standalone()?'':'<div class="btn inst" id="inst">📲 ثبّت التطبيق على هاتفك</div>'}<div class="tiles">`+
   SUBJECTS.map(s=>{const ls=s.sections.flatMap(x=>x.lessons),d=ls.filter(l=>p[l.id]&&p[l.id].pct>=70).length;
-    return `<div class="tile" style="--c:${s.color}" data-id="${s.id}"><span class="em">${ICON[s.id]}</span><b>${s.name}</b><small>${d} / ${ls.length} دروس</small></div>`}).join('')+'</div><div class="lnk" id="adm" translate="no">دخول الأستاذ</div>';
+    return `<div class="tile" style="--c:${s.color}" data-id="${s.id}"><span class="em">${ICON[s.id]}</span><b>${s.name}</b><small>${d} / ${ls.length} دروس${chDone(s.id)?' · ✅ حصة اليوم':''}</small>${(todaySubj()||{}).id===s.id?'<small>📌 مادة اليوم</small>':''}</div>`}).join('')+'</div><div class="lnk" id="adm" translate="no">دخول الأستاذ</div>';
   if($('#inst'))$('#inst').onclick=install;
+  if($('#today')){const ts=SUBJECTS.find(x=>x.id===$('#today').dataset.id);$('#today').onclick=()=>go(()=>subject(ts),ts.name,ts.color)}
+  todayToast();
   app.querySelectorAll('.tile').forEach(e=>e.onclick=()=>{const s=SUBJECTS.find(x=>x.id==e.dataset.id);go(()=>subject(s),s.name,s.color)});
   $('#adm').onclick=()=>go(adminGate,'لوحة الأستاذ','#3b2f6b');
 }
 function subject(s){
   const p=prog();
-  app.innerHTML=s.sections.map(sec=>`<h2>${sec.name}</h2><div class="path">`+sec.lessons.map((l,i)=>{const r=p[l.id];
+  app.innerHTML=chronoCard(s)+s.sections.map(sec=>`<h2>${sec.name}</h2><div class="path">`+sec.lessons.map((l,i)=>{const r=p[l.id];
     return `<div class="node ${i%2?'r':'l'}" data-l="${l.id}"><span class="dot ${r&&r.pct>=70?'done':''}">${i+1}</span><div><b>${l.title}</b><small>${starsHtml(stars(r?r.pct:0))}</small></div></div>`}).join('')+'</div>').join('');
+  chronoBind(s);
   app.querySelectorAll('.node').forEach(e=>e.onclick=()=>{
     const l=s.sections.flatMap(x=>x.lessons).find(x=>x.id==e.dataset.l);go(()=>lesson(s,l),l.title,s.color)});
 }
@@ -58,20 +64,24 @@ const videoHtml=([id,s=0,e=0])=>`<h2>🎬 شرح الدرس بالفيديو</h2
 function lesson(s,l){
   const r=prog()[l.id],ex=(window.EXAMS||[]).filter(e=>[].concat(e.l).includes(l.id));
   app.innerHTML=`<h2>${l.title}</h2>${l.qs.length?`<div class="acts"><div class="btn" id="go">ابدأ الاختبار (${l.qs.length} سؤالًا)</div></div>${(()=>{const sv=qload();return sv&&sv.lid===l.id?`<div class="acts"><div class="btn alt" id="rs">⏯ تابع من حيث توقفت (${sv.i+1} / ${sv.idx.length})</div></div>`:''})()}${r?`<p class="hint">آخر نتيجة: ${r.last??r.pct}% · أفضل نتيجة: ${r.pct}%</p>`:''}`:'<p class="hint">لم تُضف أسئلة هذا الدرس بعد.</p>'}
+  ${recBtn(l)}
   ${l.v?videoHtml(l.v):''}
   <div id="pdf" class="pdf"><p class="hint">جارٍ تحميل الدرس…</p></div>
   <div class="acts"><a class="btn alt" href="${l.pdf}" target="_blank" rel="noopener">فتح الملف في صفحة مستقلة</a></div><div id="exb"></div>`;
   if(l.qs.length)$('#go').onclick=()=>go(()=>quiz(s,l),l.title,s.color);
   if($('#rs'))$('#rs').onclick=()=>go(()=>quiz(s,l,true),l.title,s.color);
-  const sx=list=>{const b=$('#exb');if(!list.length||!b)return;b.innerHTML=examHtml(list);bindAns(b)};
+  if($('#rc'))$('#rc').onclick=()=>go(()=>recite(s,l),l.title,s.color);
+  const sx=list=>{const b=$('#exb');if(!list.length||!b)return;const was=$('#exW')&&!$('#exW').hidden;b.innerHTML=examHtml(list);bindAns(b);
+    const w=$('#exW'),t=$('#exT'),lab=t.textContent.replace(/ [▾▴]$/,'');
+    const set=o=>{w.hidden=!o;t.textContent=lab+(o?' ▴':' ▾')};set(was);t.onclick=()=>set(w.hidden)};
   sx(ex);
   if(db)db.collection('exams').where('l','array-contains',l.id).get().then(q=>{const ids=new Set(ex.map(e=>e.id));sx(ex.concat(q.docs.filter(d=>!ids.has(d.id)).map(d=>d.data())))}).catch(()=>{});
   renderPdf(l.pdf,$('#pdf'));
 }
 function examHtml(ex){
   const ys=[...new Set(ex.map(e=>e.y))].sort((a,b)=>b-a),st='style="font:600 18px/1.9 Tajawal;white-space:pre-line"';
-  return `<h2>📝 أسئلة شهادة التعليم المتوسط</h2><p class="hint">ورد هذا الدرس في ${ex.length} تمرينًا من شهادات: ${ys.join(' · ')}</p>`+
-  ys.map(y=>`<h2>شهادة ${y}</h2>`+ex.filter(e=>e.y===y).map((e,i)=>`<div class="qbox" ${st}>${esc(e.t)}</div><div class="acts"><div class="btn alt" data-a="${y}-${i}">أظهر الحل</div></div><div class="qbox" id="a${y}-${i}" hidden ${st}>${esc(e.a||'لم يُضف الحل بعد.')}</div>`).join('')).join('');
+  return `<div class="acts"><div class="btn alt" id="exT">📝 أسئلة شهادة التعليم المتوسط (${ex.length})</div></div><div id="exW" hidden><p class="hint">ورد هذا الدرس في ${ex.length} تمرينًا من شهادات: ${ys.join(' · ')}</p>`+
+  ys.map(y=>`<h2>شهادة ${y}</h2>`+ex.filter(e=>e.y===y).map((e,i)=>`<div class="qbox" ${st}>${esc(e.t)}</div><div class="acts"><div class="btn alt" data-a="${y}-${i}">أظهر الحل</div></div><div class="qbox" id="a${y}-${i}" hidden ${st}>${esc(e.a||'لم يُضف الحل بعد.')}</div>`).join('')).join('')+'</div>';
 }
 function bindAns(root){root.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const a=$('#a'+b.dataset.a);a.hidden=!a.hidden;b.textContent=a.hidden?'أظهر الحل':'أخفِ الحل'})}
 async function renderPdf(url,box){
@@ -90,12 +100,14 @@ async function renderPdf(url,box){
     box.innerHTML=`<p class="hint">تعذّر عرض الملف داخل التطبيق.<br>${esc(why)}</p><object data="${url}" type="application/pdf" width="100%" height="500"></object>`;
   }
 }
-const qsave=S=>store.set('quiz',S),qload=()=>store.get('quiz',null),qclear=()=>localStorage.removeItem('quiz');
+/* لا يُحفظ تقدّم الاختبار: مغادرة الصفحة تلغي كل الإجابات ويبدأ التلميذ من الصفر */
+const qsave=S=>{},qload=()=>null,qclear=()=>localStorage.removeItem('quiz');
 function quiz(s,l,resume){
   let S=resume?qload():null;
   if(!S||S.lid!==l.id||S.n!==l.qs.length){
     S={sid:s.id,lid:l.id,n:l.qs.length,idx:shuffle(l.qs.map((_,k)=>k)),i:0,right:0,wrong:[],combo:0,gain:0,round:0,opts:null,sel:null};
   }
+  testActive={type:'quiz',s,l};
   const draw=()=>{
     if(S.i>=S.idx.length)return done();
     const item=l.qs[S.idx[S.i]],q=item[0],a=item[1];
@@ -119,7 +131,7 @@ function quiz(s,l,resume){
     if(S.sel!=null)mark(S.sel);   /* استعادة سؤال أُجيب عنه قبل إعادة تحميل الصفحة */
   };
   const done=()=>{
-    qclear();
+    testActive=null;qclear();
     const total=l.qs.length,correct=total-S.wrong.length,pct=Math.round(correct/total*100),corr=S.round>0;
     save(s,l,correct,pct,corr?'correction':'attempt');
     if(pct>=90)S.gain+=20;addXp(S.gain);
@@ -127,7 +139,7 @@ function quiz(s,l,resume){
     app.innerHTML=`<div class="res"><div class="big">${n>=2?'🏆':'💪'}</div><h2>${pct}%</h2><div class="st">${starsHtml(n)}</div><p>${corr?'النتيجة بعد التصحيح: ':''}${correct} صحيحة من ${total} · ‎+${gain} نقطة</p><p class="msg">${pct>=90?'أسطوري! أنت بطل هذا الدرس':pct>=70?'عمل رائع، اقتربت من القمة!':'بداية جيدة، أعد المحاولة وستتفوق!'}</p><p class="hint">✓ تم حفظ هذه النتيجة · أفضل نتيجة لك في هذا الدرس: <b>${best}%</b></p><div class="acts">${S.wrong.length?'<div class="btn alt" id="re">أعد الأخطاء</div>':''}<div class="btn" id="again">محاولة جديدة 🔄</div></div><div class="acts"><div class="btn alt" id="bk">الدروس</div></div></div>`;
     if(pct>=70){confetti();SFX.win()}else SFX.lose();
     $('#again').onclick=()=>quiz(s,l);
-    if(S.wrong.length)$('#re').onclick=()=>{S.idx=shuffle(S.wrong);S.wrong=[];S.i=0;S.right=0;S.gain=0;S.combo=0;S.round++;S.opts=null;S.sel=null;draw()};
+    if(S.wrong.length)$('#re').onclick=()=>{testActive={type:'quiz',s,l};S.idx=shuffle(S.wrong);S.wrong=[];S.i=0;S.right=0;S.gain=0;S.combo=0;S.round++;S.opts=null;S.sel=null;draw()};
     $('#bk').onclick=()=>{hist=hist.slice(0,2);show()};
   };
   draw();
@@ -158,6 +170,27 @@ async function flush(){
 addEventListener('online',flush);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)flush()});
 setInterval(flush,60000);
+/* مغادرة الصفحة أثناء اختبار أو تسميع: تُلغى كل الإجابات ويُعلَم الأستاذ (kind:'left') */
+function leftTest(){
+  const T=testActive;if(!T)return;
+  testActive=null;qclear();localStorage.removeItem('rec');try{rstopMic()}catch(e){}
+  store.set('leftTest',{type:T.type,sid:T.s.id,lid:T.l.id,at:Date.now()});
+  const q=store.get('outbox',[]);
+  q.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,8),ts:Date.now(),student:name,subject:T.s.name,lessonId:T.l.id,lesson:T.l.title,right:0,total:T.type==='quiz'?T.l.qs.length:getRec(T.l).length,percent:0,kind:'left',mode:T.type});
+  store.set('outbox',q);flush();
+}
+function showLeft(){
+  const L=store.get('leftTest',null);if(!L)return;
+  localStorage.removeItem('leftTest');
+  const s=SUBJECTS.find(x=>x.id===L.sid),l=s&&s.sections.flatMap(x=>x.lessons).find(x=>x.id===L.lid),w=L.type==='quiz'?'الاختبار':'التسميع';
+  app.innerHTML=`<div class="res"><div class="big">⚠️</div><h2 style="font-size:34px">غادرتَ الصفحة أثناء ${w}</h2><p>أُلغيت جميع إجاباتك وسيبدأ ${w} من الصفر، وتم إعلام الأستاذ بذلك.</p><div class="acts"><div class="btn" id="rs0">ابدأ من جديد 🔄</div></div><div class="acts"><div class="btn alt" id="hm">الدروس</div></div></div>`;
+  $('#hm').onclick=()=>{hist=[];go(home,'حفظ')};
+  $('#rs0').onclick=()=>{if(!s||!l){hist=[];go(home,'حفظ');return}
+    hist=[[home,'حفظ'],[()=>subject(s),s.name,s.color],[()=>lesson(s,l),l.title,s.color]];
+    go(()=>L.type==='quiz'?quiz(s,l):recite(s,l),l.title,s.color)};
+}
+document.addEventListener('visibilitychange',()=>{document.hidden?leftTest():showLeft()});
+addEventListener('pagehide',leftTest);
 let unlocked=false;
 function adminGate(){
   if(!db){app.innerHTML='<div class="res"><p>اربط Firebase في firebase-config.js أولًا.</p></div>';return}
@@ -172,18 +205,23 @@ async function admin(){
   try{
     const sn=await db.collection('results').orderBy('at','desc').limit(500).get();
     const rows=sn.docs.map(d=>({id:d.id,...d.data()})),by={};
-    const bl={};rows.forEach(r=>{const k=r.student+'|'+r.lessonId;bl[k]=Math.max(bl[k]??0,r.percent||0)});Object.entries(bl).forEach(([k,v])=>{(by[k.split('|')[0]]??=[]).push(v)});
+    const bl={};rows.forEach(r=>{if(r.kind==='recite'||r.kind==='left')return;const k=r.student+'|'+r.lessonId;bl[k]=Math.max(bl[k]??0,r.percent||0)});Object.entries(bl).forEach(([k,v])=>{(by[k.split('|')[0]]??=[]).push(v)});
     const st2={},ls2={};
     rows.forEach(r=>{
+      if(r.kind==='recite'||r.kind==='left')return;
       const cor=r.kind==='correction',s=st2[r.student]??={at:0,co:0,ls:new Set()},k=r.student+'|'+r.lessonId,l=ls2[k]??={n:r.student,t:r.lesson||r.lessonId,at:0,co:0,best:0};
       if(cor){s.co++;l.co++}else{s.at++;l.at++}
       s.ls.add(r.lessonId);l.best=Math.max(l.best,r.percent||0);
     });
     const avg=Object.entries(by).map(([n,a])=>{const s=st2[n]||{at:0,co:0,ls:new Set()};return `<tr><td>${esc(n)}</td><td>${s.ls.size}</td><td>${s.at}</td><td>${Math.max(0,s.at-s.ls.size)}</td><td>${s.co}</td><td>${Math.round(a.reduce((x,y)=>x+y,0)/a.length)}%</td></tr>`}).join('');
     const det=Object.values(ls2).sort((x,y)=>x.n.localeCompare(y.n,'ar')).map(l=>`<tr><td>${esc(l.n)}</td><td>${esc(l.t)}</td><td>${l.at}</td><td>${Math.max(0,l.at-1)}</td><td>${l.co}</td><td>${l.best}%</td></tr>`).join('');
-    app.innerHTML=`<div class="acts"><div class="btn alt" id="out">خروج</div></div><h2>المعدل لكل تلميذ</h2><div class="tw"><table><tr><th>التلميذ</th><th>الدروس</th><th>المحاولات</th><th>إعادة البدء</th><th>التصحيحات</th><th>المعدل (أفضل نتيجة لكل درس)</th></tr>${avg}</table></div><h2>التفصيل حسب الدرس</h2><div class=\"tw\"><table><tr><th>التلميذ</th><th>الدرس</th><th>المحاولات</th><th>إعادة البدء</th><th>التصحيحات</th><th>الأفضل</th></tr>${det}</table></div>
+    const lf=rows.filter(r=>r.kind==='left'),leftT=lf.length?`<h2>🚨 مغادرة الصفحة أثناء الاختبار (${lf.length})</h2><div class="tw"><table><tr><th>التلميذ</th><th>المادة</th><th>الدرس</th><th>أثناء</th><th>التاريخ</th></tr>${lf.map(r=>`<tr><td>${esc(r.student)}</td><td>${esc(r.subject)}</td><td>${esc(r.lesson||r.lessonId)}</td><td>${r.mode==='quiz'?'الاختيارات':'التسميع'}</td><td>${r.at?r.at.toDate().toLocaleString('ar'):''}</td></tr>`).join('')}</table></div>`:'';
+    const rb={};rows.filter(r=>r.kind==='recite').forEach(r=>{const k=r.student+'|'+r.lessonId,o=rb[k]??={n:r.student,t:r.lesson||r.lessonId,c:0,best:0};o.c++;o.best=Math.max(o.best,r.percent||0)});
+    const recT=Object.values(rb).length?`<h2>نتائج التسميع</h2><div class="tw"><table><tr><th>التلميذ</th><th>الدرس</th><th>المحاولات</th><th>الأفضل</th></tr>${Object.values(rb).sort((x,y)=>x.n.localeCompare(y.n,'ar')).map(o=>`<tr><td>${esc(o.n)}</td><td>${esc(o.t)}</td><td>${o.c}</td><td>${o.best}%</td></tr>`).join('')}</table></div>`:'';
+    app.innerHTML=`<div class="acts"><div class="btn alt" id="out">خروج</div></div>${leftT}<h2>المعدل لكل تلميذ</h2><div class="tw"><table><tr><th>التلميذ</th><th>الدروس</th><th>المحاولات</th><th>إعادة البدء</th><th>التصحيحات</th><th>المعدل (أفضل نتيجة لكل درس)</th></tr>${avg}</table></div><h2>التفصيل حسب الدرس</h2><div class=\"tw\"><table><tr><th>التلميذ</th><th>الدرس</th><th>المحاولات</th><th>إعادة البدء</th><th>التصحيحات</th><th>الأفضل</th></tr>${det}</table></div>
+    ${recT}
     <h2>آخر النتائج</h2><div class="tw"><table><tr><th>التلميذ</th><th>المادة</th><th>الدرس</th><th>النتيجة</th><th>النوع</th><th>التاريخ</th><th></th></tr>`+
-    rows.map(r=>`<tr><td>${esc(r.student)}</td><td>${esc(r.subject)}</td><td>${esc(r.lessonId)}</td><td>${r.percent}%</td><td>${r.kind==='correction'?'بعد التصحيح':'محاولة'}</td><td>${r.at?r.at.toDate().toLocaleString('ar'):''}</td><td><a data-d="${r.id}" style="cursor:pointer">🗑</a></td></tr>`).join('')+'</table></div>';
+    rows.map(r=>`<tr><td>${esc(r.student)}</td><td>${esc(r.subject)}</td><td>${esc(r.lessonId)}</td><td>${r.percent}%</td><td>${r.kind==='correction'?'بعد التصحيح':r.kind==='recite'?'تسميع':r.kind==='left'?'🚨 غادر الصفحة':'محاولة'}</td><td>${r.at?r.at.toDate().toLocaleString('ar'):''}</td><td><a data-d="${r.id}" style="cursor:pointer">🗑</a></td></tr>`).join('')+'</table></div>';
     $('#out').onclick=()=>{unlocked=false;hist=hist.slice(0,1);show()};
     app.querySelectorAll('[data-d]').forEach(a=>a.onclick=async()=>{if(confirm('حذف هذه النتيجة؟')){await db.collection('results').doc(a.dataset.d).delete();admin()}});
   }catch(e){app.innerHTML='<div class="res"><p>تعذّر التحميل. تحقق من القواعد ومن تفعيل الدخول بالبريد في Firebase.</p></div>'}
@@ -191,10 +229,8 @@ async function admin(){
 function boot(){
   if(!name)return askName();
   who.textContent='👤';flush();
-  const S=qload();let s,l;
-  if(S){s=SUBJECTS.find(x=>x.id===S.sid);l=s&&s.sections.flatMap(x=>x.lessons).find(x=>x.id===S.lid)}
-  if(s&&l&&l.qs.length===S.n){
-    hist=[[home,'حفظ'],[()=>subject(s),s.name,s.color],[()=>lesson(s,l),l.title,s.color],[()=>quiz(s,l,true),l.title,s.color]];show();
-  }else{qclear();go(home,'حفظ')}
+  localStorage.removeItem('quiz');localStorage.removeItem('rec');
+  go(home,'حفظ');
+  if(store.get('leftTest',null))showLeft();
 }
 boot();
