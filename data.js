@@ -397,7 +397,7 @@ const VMAP={
 };
 SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(VMAP[l.id])l.v=[VID,...VMAP[l.id]]})));
 /* فيديو مستقل للدرس الأول (كامل، بلا تحديد بداية ونهاية) */
-SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(l.id==='h11')l.v=['natQ3-elrTA'];if(l.id==='g11')l.v=['6ExS4AZ5og8'];if(l.id==='i01')l.v=['QC2X7VDbKNk'];if(l.id==='p11')l.v=['Wo3ilp3IPz0'];if(l.id==='c11')l.v=['kS5D0S6jpqY'];if(l.id==='m1-01')l.v=['LJFoWTR607c'];if(l.id==='m1-02')l.v=['YEEep-R_Dm0'];if(l.id==='m1-03')l.v=['VPP7_CCUZig']})));
+SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(l.id==='h11')l.v=['natQ3-elrTA'];if(l.id==='h12')l.v=['H_UKS22aeVA'];if(l.id==='g11')l.v=['6ExS4AZ5og8'];if(l.id==='i01')l.v=['QC2X7VDbKNk'];if(l.id==='p11')l.v=['Wo3ilp3IPz0'];if(l.id==='c11')l.v=['kS5D0S6jpqY'];if(l.id==='m1-01')l.v=['LJFoWTR607c'];if(l.id==='m1-02')l.v=['YEEep-R_Dm0'];if(l.id==='m1-03')l.v=['VPP7_CCUZig']})));
 
 /* جدول المراجعة الأسبوعي (نصف ساعة حفظ في اليوم، يتكرر كل أسبوع). المفتاح: رقم اليوم (0=الأحد ... 6=السبت). الرياضيات والفيزياء والعلوم خارج البرنامج. غيّر الجدول من هنا. */
 window.SCHEDULE={0:'hist',1:'geo',2:'isl',3:'civ'};
