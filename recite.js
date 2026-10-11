@@ -2,10 +2,10 @@
    عناصر الدرس: l.rec = [[العنوان, الإجابة النموذجية, كلمات مفتاحية اختيارية], ...]
    إن لم يوجد l.rec يُشتقّ الاختبار من أسئلة الدرس (qs) ما عدا الأسئلة التي تعتمد على رؤية الخيارات. */
 const RLIMIT=12*3600*1000,RMAX=3,RPTS=[100,70,40],RPASS=.55;
-const AR_STOP=new Set('في من على الى عن ان ما هو هي او ثم كل هذا هذه الذي التي بين كان يكون ذلك قد لا مع هذان هما انه انها التي الذين'.split(' '));
+const AR_STOP=new Set('les des une est dans pour que qui par sur aux son ses ont sont avec ces cet cette mais في من على الى عن ان ما هو هي او ثم كل هذا هذه الذي التي بين كان يكون ذلك قد لا مع هذان هما انه انها التي الذين'.split(' '));
 function rnorm(s){
   return String(s||'').replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d))
-    .replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي')
+    .replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/œ/g,'oe').replace(/æ/g,'ae').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .replace(/[^\u0621-\u064A0-9a-zA-Z\s]/g,' ').toLowerCase().replace(/\s+/g,' ').trim();
 }
 function rstem(w){
@@ -13,6 +13,7 @@ function rstem(w){
   if(w.length>3&&w[0]==='و')w=w.slice(1);
   if(w.length>4)w=w.replace(/(ات|ون|ين|ان)$/,'');
   if(w.length>3)w=w.replace(/ه$/,'');
+  if(w.length>4&&/^[a-z]+$/.test(w))w=w.replace(/[sx]$/,'');   /* فرنسية: جمع */
   return w;
 }
 const rtok=s=>rnorm(s).split(' ').filter(w=>w&&!AR_STOP.has(w)&&(w.length>=3||/^\d+$/.test(w))).map(rstem);
@@ -51,6 +52,7 @@ function rstopMic(){try{rMic&&rMic.stop()}catch(e){}rMic=null}
 function recite(s,l){
   const items=getRec(l),n=items.length;
   let S=null;
+  const FD=s.id==='fr'?' dir="ltr" lang="fr"':'';
   testActive={type:'recite',s,l};
   {
     S={sid:s.id,lid:l.id,n,start:Date.now(),order:items.map((_,k)=>k),i:0,att:0,scores:[],note:null};
@@ -61,14 +63,14 @@ function recite(s,l){
     if(S.i>=n)return finish(false);
     const it=items[S.order[S.i]];
     app.innerHTML=`<div class="rtop"><span>🎙️ التسميع</span><span>${S.i+1} / ${n}</span></div><div class="bar"><i style="width:${S.i/n*100}%"></i></div>
-    <div class="qbox">${it[3]?'':'سمّع: '}${esc(it[0])}</div>
+    <div class="qbox"${FD}>${it[3]?'':(FD?'Récite : ':'سمّع: ')}${esc(it[0])}</div>
     <p class="dots">${[0,1,2].map(k=>k<S.att?'🔴':k===S.att?'🟡':'⚪').join(' ')} &nbsp; المحاولة ${Math.min(S.att+1,RMAX)} من ${RMAX}</p>
-    <textarea id="ans" rows="5" placeholder="سمّع من حفظك… أو اكتب إجابتك بنفسك" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+    <textarea id="ans" rows="5"${FD} placeholder="سمّع من حفظك… أو اكتب إجابتك بنفسك" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
     <div class="acts"><div class="btn alt" id="mic">🎙️ ابدأ التسميع</div><div class="btn" id="chk">تحقّق ✔</div></div><div id="fb"></div><div class="acts"><div class="btn alt rst" id="rst">🔄 ابدأ من الأول</div></div>`;
     const ta=$('#ans');
     $('#rst').onclick=()=>{if(confirm('هل تريد البدء من العنوان الأول؟ ')){rstopMic();clearInterval(rTimer);localStorage.removeItem('rec');recite(s,l)}};
     ['paste','drop','cut','copy','contextmenu'].forEach(ev=>ta.addEventListener(ev,e=>e.preventDefault()));
-    initMic($('#mic'),ta);
+    initMic($('#mic'),ta,s.id==='fr'?'fr-FR':'ar-DZ');
     $('#chk').onclick=()=>{
       const text=ta.value.trim();
       if(text.length<2){$('#fb').innerHTML='<div class="fb b">اكتب أو سمّع إجابتك أولًا</div>';return}
@@ -80,7 +82,7 @@ function recite(s,l){
         S.att++;SFX.no();
         if(S.att>=RMAX){
           S.scores[S.order[S.i]]=0;store.set('rec',S);
-          lock(`<div class="fb b">انتهت المحاولات — هذه الإجابة النموذجية:</div><div class="mdl">${esc(it[1])}</div><div class="acts"><div class="btn alt" id="rt">🔁 أعد المحاولة</div><div class="btn" id="nx2">التالي</div></div>`);
+          lock(`<div class="fb b">انتهت المحاولات — هذه الإجابة النموذجية:</div><div class="mdl"${FD}>${esc(it[1])}</div><div class="acts"><div class="btn alt" id="rt">🔁 أعد المحاولة</div><div class="btn" id="nx2">التالي</div></div>`);
         }else{
           store.set('rec',S);ta.value='';
           $('#fb').innerHTML=`<div class="fb b">ليست الإجابة المطلوبة بعد — حاول مجددًا (بقيت ${RMAX-S.att} ${RMAX-S.att===1?'محاولة':'محاولات'})</div>`;
@@ -126,13 +128,13 @@ function rmerge(acc,t){
   }
   return acc+' '+t;
 }
-function initMic(btn,ta){
+function initMic(btn,ta,lang){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){btn.textContent='🎙️ غير متاح في هذا المتصفح';btn.style.opacity=.5;btn.onclick=()=>alert('التسميع الصوتي يعمل في Chrome. يمكنك كتابة إجابتك في الخانة.');return}
   let on=false,base='';
   btn.onclick=()=>{
     if(on){rstopMic();return}
-    const r=new SR();rMic=r;r.lang='ar-DZ';r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
+    const r=new SR();rMic=r;r.lang=lang||'ar-DZ';r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
     base=ta.value?ta.value+' ':'';
     r.onresult=e=>{let acc='';for(let i=0;i<e.results.length;i++)acc=rmerge(acc,e.results[i][0].transcript);ta.value=base+acc};
     const off=()=>{on=false;if(btn.isConnected)btn.textContent='🎙️ ابدأ التسميع';btn.classList.remove('live')};

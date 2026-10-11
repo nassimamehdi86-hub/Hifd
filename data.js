@@ -524,7 +524,8 @@ SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(l.id==='h11')
 /* اللغة الفرنسية ← Le texte argumentatif ← الدرس 1: La structure argumentative
    (المصدر: ملخص Prof SOUALHIA Antar — « Ce que l'élève de 4°AM doit savoir ») */
 SUBJECTS.push({id:'fr',name:'اللغة الفرنسية',color:'#E8453C',sections:[
- {name:'Le texte argumentatif',lessons:[L('f11','La structure argumentative')]}]});
+ {name:'Le texte argumentatif',lessons:[L('f11','La structure argumentative')]},
+ {name:'Vocabulaire',lessons:[L('f12',"Les verbes d'opinion")]}]});
 const f11=SUBJECTS.find(s=>s.id==='fr').sections[0].lessons[0];
 f11.v=['zsZ7Rs5a9ZU'];
 f11.qs=[
@@ -569,6 +570,47 @@ f11.rec=[
  ["Contenu de la conclusion","La conclusion contient la synthèse.",["conclusion","synthèse"]],
  ["La synthèse","La synthèse est la reformulation ou la confirmation de la thèse.",["synthèse","reformulation","confirmation","thèse"]],
  ["Schéma de la structure argumentative","Introduction : le thème et la thèse. Développement : les arguments et les exemples, avec des connecteurs d'énumération. Conclusion : la synthèse, c'est-à-dire la reformulation ou la confirmation de la thèse.",["introduction","thème","thèse","développement","arguments","exemples","connecteurs","conclusion","synthèse"]]
+];
+
+/* اللغة الفرنسية ← Vocabulaire ← الدرس 2: Les verbes d'opinion
+   (المصدر: ملخص Prof SOUALHIA Antar — Séquence 01 / Leçon 01 / Vocabulaire 01) */
+const f12=SUBJECTS.find(s=>s.id==='fr').sections[1].lessons[0];
+f12.v=['EQIAlODtGlg'];
+f12.qs=[
+ ["À quoi servent les verbes et les expressions d'opinion ?","À exprimer mon point de vue (mon avis)","À raconter un événement passé","À décrire un paysage","À donner un ordre"],
+ ["« أفعال الرأي » se dit en français :","Les verbes d'opinion","Les verbes d'action","Les verbes de mouvement","Les expressions d'opinion"],
+ ["« عبارات الرأي » se dit en français :","Les expressions d'opinion","Les verbes d'opinion","Les connecteurs d'énumération","Les arguments"],
+ ["Lequel de ces verbes est un verbe d'opinion ?","Penser","Manger","Marcher","Écrire"],
+ ["Lequel de ces verbes est un verbe d'opinion ?","Croire","Courir","Dormir","Ouvrir"],
+ ["Lequel de ces verbes est un verbe d'opinion ?","Estimer","Chanter","Voyager","Cuisiner"],
+ ["Lequel de ces verbes est un verbe d'opinion ?","Affirmer","Dessiner","Sauter","Laver"],
+ ["Lequel de ces verbes est un verbe d'opinion ?","Trouver","Tomber","Nager","Lire"],
+ ["Quel groupe contient uniquement des verbes d'opinion ?","Penser – croire – estimer – trouver","Penser – courir – estimer – manger","Croire – dormir – trouver – écrire","Affirmer – marcher – douter – lire"],
+ ["Laquelle de ces expressions est une expression d'opinion ?","À mon avis","Il y a longtemps","Tout à coup","Par exemple"],
+ ["Laquelle de ces expressions est une expression d'opinion ?","Selon moi","Pendant ce temps","Il était une fois","Tout d'un coup"],
+ ["Quel groupe contient uniquement des expressions d'opinion ?","Personnellement – selon moi – à mon avis – en ce qui me concerne","Personnellement – tout à coup – selon moi – hier","À mon avis – il y a longtemps – d'après moi – enfin","D'après moi – par exemple – selon moi – ensuite"],
+ ["Complète : « ... , Annaba est une ville touristique par excellence. »","D'après moi","Je pense","J'affirme","Je suis convaincu"],
+ ["Dans « Je suis convaincu(e) que l'Algérie est l'un des plus beaux pays au monde », quel est le verbe d'opinion ?","suis convaincu(e)","est","l'Algérie","beaux pays"],
+ ["Dans « À mon avis, Jijel est la perle du littoral algérien », « À mon avis » est :","Une expression d'opinion","Un verbe d'opinion","Un connecteur d'énumération","Une thèse"],
+ ["Dans « Je pense que la wilaya d'Oran mérite d'être visitée », quel est le verbe d'opinion ?","pense","mérite","être visitée","la wilaya"],
+ ["Dans « D'après moi, Annaba est une ville touristique par excellence », « D'après moi » est :","Une expression d'opinion","Un verbe d'opinion","Un exemple","Une conclusion"],
+ ["Dans « J'affirme que notre Sahara est une excellente destination touristique en hiver », quel est le verbe d'opinion ?","affirme","est","notre Sahara","destination"],
+ ["Dans « À mon avis, le secteur du tourisme en Algérie a besoin d'encouragement », quelle est l'expression d'opinion ?","À mon avis","le secteur du tourisme","a besoin","d'encouragement"],
+ ["Complète : « Les amateurs de la nature ... que le parc national de Tassili n'Ajjer est un trésor de biodiversité. »","estiment","estime","estimons","estimer"],
+ ["Complète : « La plupart des touristes ... que le Sahara algérien est l'un des endroits les plus fascinants de la planète. »","affirment","affirme","affirmons","affirmer"],
+ ["Complète : « Les randonneurs ... que le parc national de Gouraya offre des vues panoramiques incroyables sur la Méditerranée. »","pensent","pense","pensons","penser"],
+ ["Comment réécrire « Tlemcen est une très belle ville » avec un verbe d'opinion ?","J'affirme que Tlemcen est une très belle ville","Tlemcen est une très belle ville que j'affirme","Que j'affirme Tlemcen est une très belle ville","Affirmer Tlemcen belle ville"],
+ ["Comment réécrire « Les monts de Tikjda sont éblouissants » avec un verbe d'opinion ?","Je trouve que les monts de Tikjda sont éblouissants","Je trouve les monts de Tikjda que sont éblouissants","Que je trouve les monts de Tikjda éblouissants","Je trouve éblouissants que les monts de Tikjda sont"],
+ ["Dans « Je suis persuadé(e) que la côte algérienne est magnifique », quel est le verbe d'opinion ?","suis persuadé(e)","est magnifique","la côte","algérienne"]
+];
+f12.rec=[
+ ["À quoi servent les verbes et les expressions d'opinion","Pour exprimer mon point de vue (mon avis), je peux utiliser les verbes et les expressions d'opinion.",["exprimer","point","vue","avis","verbes","expressions","opinion"]],
+ ["Les verbes d'opinion (1)","Les verbes d'opinion sont : penser, croire, estimer, trouver et affirmer.",["penser","croire","estimer","trouver","affirmer"]],
+ ["Les verbes d'opinion (2)","Autres verbes d'opinion : être persuadé(e), être sûr(e), être convaincu(e) et douter.",["persuadé","convaincu","douter"]],
+ ["Les expressions d'opinion","Les expressions d'opinion sont : personnellement, à mon avis, d'après moi, selon moi et en ce qui me concerne.",["personnellement","avis","après","selon","concerne"]],
+ ["Exemple avec un verbe d'opinion","Je suis convaincu(e) que l'Algérie est l'un des plus beaux pays au monde.",["convaincu","algérie","beaux","pays","monde"]],
+ ["Exemple avec une expression d'opinion","À mon avis, Jijel est la perle du littoral algérien.",["avis","jijel","perle","littoral","algérien"]],
+ ["Réécrire une thèse avec un verbe d'opinion","« Tlemcen est une très belle ville » devient « J'affirme que Tlemcen est une très belle ville ».",["tlemcen","affirme","belle","ville"]]
 ];
 
 /* جدول المراجعة الأسبوعي (نصف ساعة حفظ في اليوم، يتكرر كل أسبوع). المفتاح: رقم اليوم (0=الأحد ... 6=السبت). الرياضيات والفيزياء والعلوم خارج البرنامج. غيّر الجدول من هنا. */
