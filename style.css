@@ -83,3 +83,14 @@ textarea{width:100%;padding:12px 16px;border:3px solid var(--c);border-radius:20
 .mdl[dir=ltr]{text-align:left;border-right:0;border-left:8px solid #22B35E}
 .qtr{font:400 17px/1.7 'Lalezar';color:#6b6591;text-align:right;border-top:2px dashed #e3def5;margin-top:10px;padding-top:8px}
 .pdf img{display:block;width:100%;height:auto;margin:0 0 14px;border-radius:18px;box-shadow:0 5px 0 rgba(42,31,92,.2);background:#fff}
+
+/* الأنشطة التفاعلية */
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:2px 0 14px}
+.chip{font:600 18px 'Tajawal';background:#fff;color:var(--ink);border:3px solid var(--c);border-radius:16px;padding:8px 14px;cursor:pointer;box-shadow:0 4px 0 rgba(42,31,92,.15)}
+.chip:active{transform:translateY(3px);box-shadow:none}
+.chip.ok{background:#22B35E;border-color:#22B35E;color:#fff}.chip.no{background:#ff5a5a;border-color:#ff5a5a;color:#fff}
+.chip:disabled{opacity:.35;cursor:default}
+.seg{cursor:pointer;padding:2px 5px;border-radius:9px;display:inline-block}
+.seg.ok{background:#c9f2d6;text-decoration:underline;text-decoration-color:#e11d48;text-decoration-thickness:3px}.seg.no{background:#ffd4d4}
+.blank{display:inline-block;min-width:96px;border-bottom:3px dashed var(--c);text-align:center;color:#15803d;font-weight:700}
+.fb{font:600 17px/1.7 'Tajawal';margin-top:8px;text-align:right}.fb.ok{color:#15803d}.fb.no{color:#b91c1c}

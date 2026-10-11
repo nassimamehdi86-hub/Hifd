@@ -79,14 +79,77 @@ function lesson(s,l){
   if(db)db.collection('exams').where('l','array-contains',l.id).get().then(q=>{const ids=new Set(ex.map(e=>e.id));sx(ex.concat(q.docs.filter(d=>!ids.has(d.id)).map(d=>d.data())))}).catch(()=>{});
   l.pg?renderImgs(l,$('#pdf')):renderPdf(l.pdf,$('#pdf'));
 }
-/* نافذة الأنشطة والتمارين: التمرين ثم زر «أظهر الحل» */
+/* نافذة الأنشطة والتمارين التفاعلية: اضغط على الإجابة الصحيحة، ثم «أظهر الحل» عند الحاجة */
 function activities(s,l){
   const fr=s.id==='fr',D=fr?' dir="ltr" lang="fr"':'',st='style="font:600 18px/1.9 Tajawal;white-space:pre-line"';
-  app.innerHTML=`<h2 dir="auto">✏️ الأنشطة والتمارين</h2><p class="hint">حاول الحل بنفسك أولًا، ثم اضغط «أظهر الحل» (الحلول من «Je me corrige» في ملف الدرس).</p>`+
-  l.acts.map((g,i)=>`<h2 dir="auto">${esc(g.h)}</h2><div class="qbox"${D} ${st}>${esc(g.t)}${g.ar?`<div class="qtr" dir="rtl">${esc(g.ar)}</div>`:''}</div>`+
-    g.items.map((it,k)=>`<div class="qbox"${D} ${st}>${esc(it.q)}${it.ar?`<div class="qtr" dir="rtl">${esc(it.ar)}</div>`:''}</div>`+
-      (it.a?`<div class="acts"><div class="btn alt" data-a="ac${i}-${k}">أظهر الحل</div></div><div class="qbox" id="aac${i}-${k}" hidden${D} ${st}>${esc(it.a)}</div>`:'')).join('')).join('');
+  const norm=x=>String(x).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’‘`]/g,"'");
+  const hint={pick:'اضغط على فعل الرأي أو عبارة الرأي في الجملة (وإن كانت من كلمتين فاضغط عليهما معًا).',fill:'اختر الفعل المناسب لإكمال الجملة — كل فعل يُستعمل مرة واحدة.',build:'اختر فعل رأي لإعادة صياغة الأطروحة — الاختيار حرّ، لكن احذر الأفعال الخاطئة!',write:'اكتب جملتيك ثم اضغط «تحقّق».'};
+  const tr=x=>x.ar?`<div class="qtr" dir="rtl">${esc(x.ar)}</div>`:'';
+  app.innerHTML=`<h2 dir="auto">✏️ الأنشطة والتمارين</h2><p class="hint">أجب بنفسك بالضغط على الإجابة الصحيحة، وإن احتجت فاضغط «أظهر الحل» (الحلول من «Je me corrige»).</p>`+
+  l.acts.map((g,i)=>{
+    const ty=g.type||'show';
+    return `<h2 dir="auto">${esc(g.h)}</h2><div class="qbox"${D} ${st}>${esc(g.t)}${tr(g)}</div>${hint[ty]?`<p class="hint">${hint[ty]}</p>`:''}`+
+    g.items.map((it,k)=>{
+      const id=`${i}-${k}`;
+      let body=esc(it.q||''),ui='';
+      if(ty==='pick')body=it.s.split(' ').map((x,m)=>`<span class="seg" data-m="${m}">${esc(x)}</span>`).join(' ');
+      if(ty==='fill'){body=`${esc(it.pre)}<span class="blank">………</span>${esc(it.post)}`;ui=`<div class="chips"${D}>${g.opts.map(o=>`<button class="chip" data-w="${esc(o)}">${esc(o)}</button>`).join('')}</div>`}
+      if(ty==='build')ui=`<div class="chips"${D}>${g.opts.map(o=>`<button class="chip" data-v="${esc(o[0])}" data-ok="${o[1]}">${esc(o[0])}</button>`).join('')}</div>`;
+      if(ty==='write')ui=`<textarea class="wr" rows="4"${D} placeholder="Phrase 1 …&#10;Phrase 2 …"></textarea><div class="acts"><div class="btn" data-chk="1">تحقّق</div></div>`;
+      const sol=it.a?`<div class="acts"><div class="btn alt" data-a="ac${id}">أظهر الحل</div></div><div class="qbox" id="aac${id}" hidden${D} ${st}>${esc(it.a)}</div>`:'';
+      return `<div class="act" data-i="${i}" data-k="${k}"><div class="qbox"${D} ${st}>${body}${tr(it)}<div class="fb" dir="rtl"></div></div>${ui}${sol}</div>`;
+    }).join('');
+  }).join('');
   bindAns(app);
+  const fb=(box,ok,msg)=>{const f=box.querySelector('.fb');f.className='fb '+(ok?'ok':'no');f.innerHTML=msg};
+  const used=new Set(),fills=[];
+  const refresh=()=>fills.forEach(b=>{if(!b._ok)b.querySelectorAll('.chip').forEach(c=>c.disabled=used.has(c.dataset.w))});
+  app.querySelectorAll('.act').forEach(box=>{
+    const g=l.acts[+box.dataset.i],it=g.items[+box.dataset.k],ty=g.type;
+    if(ty==='pick'){
+      const words=it.s.split(' '),need=new Set(it.ans),got=new Set();
+      box.querySelectorAll('.seg').forEach(sp=>sp.onclick=()=>{
+        const m=+sp.dataset.m;
+        if(got.size===need.size||got.has(m))return;
+        if(need.has(m)){
+          got.add(m);sp.classList.add('ok');
+          fb(box,true,got.size===need.size?'✔ أحسنت! <bdi dir="ltr">'+esc(it.ans.map(n=>words[n]).join(' ').replace(/,$/,''))+' = '+esc(it.kind)+'</bdi>':'✔ جيد، تابع…');
+        }else{sp.classList.add('no');fb(box,false,'✘ ليست هذه، حاول مرة أخرى');setTimeout(()=>sp.classList.remove('no'),700)}
+      });
+    }
+    if(ty==='fill'){
+      fills.push(box);
+      box.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{
+        if(box._ok||ch.disabled)return;
+        if(ch.dataset.w===it.ans){
+          box._ok=true;ch.classList.add('ok');used.add(it.ans);
+          box.querySelector('.blank').textContent=it.ans;
+          box.querySelectorAll('.chip').forEach(c=>{if(c!==ch)c.disabled=true});
+          fb(box,true,'✔ صحيح!');refresh();
+        }else{ch.classList.add('no');fb(box,false,'✘ جرّب فعلًا آخر');setTimeout(()=>ch.classList.remove('no'),700)}
+      });
+    }
+    if(ty==='build'){
+      box.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{
+        const ok=ch.dataset.ok==='1';
+        box.querySelectorAll('.chip').forEach(c=>c.classList.remove('ok','no'));
+        ch.classList.add(ok?'ok':'no');
+        const sent=ch.dataset.v+' '+it.th;
+        fb(box,ok,(ok?'✔ ':'✘ ')+'<bdi dir="ltr">'+esc(sent)+'</bdi>'+(ok?' — فعل رأي صحيح':' — هذا ليس فعل رأي'));
+      });
+    }
+    if(ty==='write'){
+      box.querySelector('[data-chk]').onclick=()=>{
+        const ss=box.querySelector('textarea').value.split(/\n|(?<=[.!?])\s+/).map(x=>x.trim()).filter(Boolean);
+        const f=box.querySelector('.fb');
+        if(!ss.length){f.className='fb no';f.textContent='اكتب جملتيك أولًا';return}
+        const has=x=>{x=norm(x);return /(pens|croi|estim|trouv|affirm|dout)[a-z]*\s+que/.test(x)||/persuad|convaincu|suis sur/.test(x)||/a mon avis|d'apres moi|selon moi|personnellement|en ce qui me concerne/.test(x)};
+        const n=ss.filter(has).length;
+        f.className='fb '+(n>=2?'ok':'no');
+        f.innerHTML=ss.map(x=>(has(x)?'✔ ':'✘ ')+'<bdi dir="ltr">'+esc(x)+'</bdi>').join('<br>')+'<br>'+(n>=2?'أحسنت! جملتان فيهما فعل رأي أو عبارة رأي.':'ينقصك '+(2-n)+' جملة فيها فعل رأي (مثل: je pense que، à mon avis…).');
+      };
+    }
+  });
 }
 function examHtml(ex){
   const ys=[...new Set(ex.map(e=>e.y))].sort((a,b)=>b-a),st='style="font:600 18px/1.9 Tajawal;white-space:pre-line"';
