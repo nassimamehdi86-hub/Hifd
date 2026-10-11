@@ -521,5 +521,55 @@ SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(VMAP[l.id])l.
 /* فيديو مستقل للدرس الأول (كامل، بلا تحديد بداية ونهاية) */
 SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(l.id==='h11')l.v=['natQ3-elrTA'];if(l.id==='h12')l.v=['H_UKS22aeVA'];if(l.id==='g11')l.v=['6ExS4AZ5og8'];if(l.id==='g12')l.v=['iREOtP9WtYQ'];if(l.id==='i01')l.v=['QC2X7VDbKNk'];if(l.id==='p11')l.v=['Wo3ilp3IPz0'];if(l.id==='c11')l.v=['kS5D0S6jpqY'];if(l.id==='m1-01')l.v=['LJFoWTR607c'];if(l.id==='m1-02')l.v=['YEEep-R_Dm0'];if(l.id==='m1-03')l.v=['VPP7_CCUZig']})));
 
+/* اللغة الفرنسية ← Le texte argumentatif ← الدرس 1: La structure argumentative
+   (المصدر: ملخص Prof SOUALHIA Antar — « Ce que l'élève de 4°AM doit savoir ») */
+SUBJECTS.push({id:'fr',name:'اللغة الفرنسية',color:'#E8453C',sections:[
+ {name:'Le texte argumentatif',lessons:[L('f11','La structure argumentative')]}]});
+const f11=SUBJECTS.find(s=>s.id==='fr').sections[0].lessons[0];
+f11.v=['zsZ7Rs5a9ZU'];
+f11.qs=[
+ ["« النص الحجاجي » se dit en français :","Le texte argumentatif","Le texte narratif","Le texte descriptif","Le texte explicatif"],
+ ["Qu'est-ce qu'un texte argumentatif ?","Un texte dans lequel l'auteur défend une opinion ou une idée sur un sujet donné pour convaincre ou persuader le lecteur","Un texte dans lequel l'auteur raconte des événements pour convaincre ou persuader le lecteur","Un texte dans lequel l'auteur défend une opinion sans utiliser ni arguments ni exemples","Un texte dans lequel l'auteur informe le lecteur sur un sujet sans prendre position"],
+ ["Quel est le but de l'auteur dans un texte argumentatif ?","Convaincre ou persuader le lecteur","Raconter une histoire au lecteur","Décrire un lieu au lecteur","Donner des consignes au lecteur"],
+ ["Que défend l'auteur dans un texte argumentatif ?","Une opinion ou une idée (une thèse) sur un sujet donné","Un récit sur un sujet donné","Un thème sans aucune prise de position","Une description détaillée d'un objet"],
+ ["Qu'utilise l'auteur pour convaincre le lecteur ?","Des arguments et des exemples","Des descriptions et des dialogues","Des consignes et des étapes","Des dates et des événements"],
+ ["Comment appelle-t-on l'idée ou l'opinion que l'auteur défend ?","La thèse","Le thème","L'argument","L'exemple"],
+ ["Combien de parties comporte la structure argumentative ?","Trois parties : introduction, développement, conclusion","Deux parties : introduction et conclusion","Trois parties : thème, thèse, synthèse","Quatre parties : introduction, arguments, exemples, conclusion"],
+ ["Quel est l'ordre des parties de la structure argumentative ?","Introduction → Développement → Conclusion","Développement → Introduction → Conclusion","Introduction → Conclusion → Développement","Conclusion → Développement → Introduction"],
+ ["Quelle est la première partie de la structure argumentative ?","L'introduction (مقدمة)","Le développement (عرض)","La conclusion (خاتمة)","La synthèse (خلاصة)"],
+ ["Que contient l'introduction ?","Le thème et la thèse","Les arguments et les exemples","La synthèse et la reformulation de la thèse","Les connecteurs d'énumération et les exemples"],
+ ["Que signifie le thème ?","Le sujet du texte (موضوع النص)","L'opinion de l'auteur","Les arguments de l'auteur","La reformulation de la thèse"],
+ ["Quel mot désigne le sujet du texte ?","Le thème","La thèse","La synthèse","L'argumentaire"],
+ ["Que signifie la thèse ?","L'opinion, le point de vue de l'auteur (رأي الكاتب ووجهة نظره)","Le sujet du texte","L'exemple qui illustre un argument","Le résumé du texte"],
+ ["Quel groupe de mots contient des synonymes de « thèse » ?","Point de vue – opinion – avis – prise de position","Sujet – thème – idée – exemple","Argument – preuve – exemple – conclusion","Synthèse – reformulation – confirmation – résumé"],
+ ["Quelle est la deuxième partie de la structure argumentative ?","Le développement (عرض)","L'introduction (مقدمة)","La conclusion (خاتمة)","La thèse"],
+ ["Dans quelle partie trouve-t-on les arguments et les exemples ?","Dans le développement","Dans l'introduction","Dans la conclusion","Dans l'introduction et la conclusion"],
+ ["Comment appelle-t-on le contenu du développement ?","L'argumentaire","La synthèse","Le thème","La thèse"],
+ ["De quoi est composé l'argumentaire ?","Des arguments et des exemples","Du thème et de la thèse","De la thèse et de la synthèse","Des exemples et des connecteurs seulement"],
+ ["Que sont les arguments (حجج وبراهين) ?","Les raisons et les preuves utilisées pour défendre la thèse","Le sujet traité dans le texte","La reformulation de la thèse","Les exemples placés dans la conclusion"],
+ ["Quel est le rôle des exemples ?","Soutenir (appuyer) les arguments (لتدعيم الحجج)","Annoncer le thème du texte","Reformuler la thèse","Terminer le texte"],
+ ["Quel est le rôle des connecteurs d'énumération ?","Ordonner (organiser) les idées (لترتيب الأفكار)","Reformuler la thèse","Présenter le sujet du texte","Confirmer l'opinion de l'auteur"],
+ ["Quelle est la troisième partie de la structure argumentative ?","La conclusion (خاتمة)","L'introduction (مقدمة)","Le développement (عرض)","L'argumentaire"],
+ ["Que contient la conclusion ?","La synthèse","Le thème","Les arguments","Les exemples"],
+ ["En quoi consiste la synthèse (خلاصة) ?","Reformulation ou confirmation de la thèse","Annonce du thème du texte","Liste des exemples du développement","Ajout de nouveaux arguments"],
+ ["Que signifie « reformuler la thèse » ?","Redire la même idée avec d'autres mots (إعادة صياغة الفكرة)","Changer d'opinion","Ajouter un nouvel exemple","Annoncer le sujet"],
+ ["Dans quelle partie présente-t-on le thème et la thèse ?","Dans l'introduction","Dans le développement","Dans la conclusion","Dans l'argumentaire"],
+ ["Quel schéma résume correctement la structure argumentative ?","Introduction (thème + thèse) → Développement (arguments + exemples) → Conclusion (synthèse)","Introduction (arguments + exemples) → Développement (thème + thèse) → Conclusion (synthèse)","Introduction (synthèse) → Développement (thème + thèse) → Conclusion (arguments + exemples)","Introduction (thème + exemples) → Développement (thèse + synthèse) → Conclusion (arguments)"]
+];
+f11.rec=[
+ ["Définition du texte argumentatif","Un texte argumentatif est un texte dans lequel l'auteur défend une opinion ou une idée (une thèse) sur un sujet donné, en utilisant des arguments et des exemples pour convaincre ou persuader le lecteur.",["défend","opinion","idée","thèse","sujet","arguments","exemples","convaincre","persuader","lecteur"]],
+ ["Les parties de la structure argumentative","La structure argumentative comporte trois parties : l'introduction, le développement et la conclusion.",["introduction","développement","conclusion"]],
+ ["Contenu de l'introduction","L'introduction contient le thème et la thèse.",["thème","thèse"]],
+ ["Le thème","Le thème, c'est le sujet du texte.",["thème","sujet"]],
+ ["La thèse","La thèse, c'est le point de vue, l'opinion, l'avis ou la prise de position de l'auteur.",["point","vue","opinion","avis","prise","position","auteur"]],
+ ["Le développement (l'argumentaire)","Le développement est l'argumentaire : il est composé des arguments et des exemples, reliés par des connecteurs d'énumération.",["argumentaire","arguments","exemples","connecteurs","énumération"]],
+ ["Les arguments","Les arguments sont les raisons et les preuves utilisées pour défendre la thèse.",["arguments","raisons","preuves","défendre","thèse"]],
+ ["Les exemples","Les exemples servent à soutenir les arguments.",["exemples","arguments","soutenir"]],
+ ["Les connecteurs d'énumération","Les connecteurs d'énumération servent à ordonner les idées.",["connecteurs","énumération","ordonner","idées"]],
+ ["Contenu de la conclusion","La conclusion contient la synthèse.",["conclusion","synthèse"]],
+ ["La synthèse","La synthèse est la reformulation ou la confirmation de la thèse.",["synthèse","reformulation","confirmation","thèse"]],
+ ["Schéma de la structure argumentative","Introduction : le thème et la thèse. Développement : les arguments et les exemples, avec des connecteurs d'énumération. Conclusion : la synthèse, c'est-à-dire la reformulation ou la confirmation de la thèse.",["introduction","thème","thèse","développement","arguments","exemples","connecteurs","conclusion","synthèse"]]
+];
+
 /* جدول المراجعة الأسبوعي (نصف ساعة حفظ في اليوم، يتكرر كل أسبوع). المفتاح: رقم اليوم (0=الأحد ... 6=السبت). الرياضيات والفيزياء والعلوم خارج البرنامج. غيّر الجدول من هنا. */
 window.SCHEDULE={0:'hist',1:'geo',2:'isl',3:'civ'};

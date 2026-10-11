@@ -14,7 +14,7 @@ back.onclick=()=>{
   if(testActive){if(!confirm('ستُلغى كل إجاباتك ويبدأ الاختبار من الصفر. هل تريد الخروج؟'))return;testActive=null;localStorage.removeItem('rec');rstopMic()}
   hist.pop();show()};
 who.onclick=()=>askName(true);
-const PAL={hist:'#FF9F1C',geo:'#0FB5A6',civ:'#6C4DF6',isl:'#22B35E',sci:'#FF4D8D',math:'#A855F7',phy:'#0EA5E9',ara:'#CA8A04'},ICON={hist:'📜',geo:'🌍',civ:'🏛️',isl:'🕌',sci:'🔬',math:'📐',phy:'⚛️',ara:'📖'};
+const PAL={hist:'#FF9F1C',geo:'#0FB5A6',civ:'#6C4DF6',isl:'#22B35E',sci:'#FF4D8D',math:'#A855F7',phy:'#0EA5E9',ara:'#CA8A04',fr:'#E8453C'},ICON={hist:'📜',geo:'🌍',civ:'🏛️',isl:'🕌',sci:'🔬',math:'📐',phy:'⚛️',ara:'📖',fr:'🇫🇷'};
 SUBJECTS.forEach(s=>s.color=PAL[s.id]);
 const PRAISE=['أحسنت!','ممتاز!','رائع!','يا بطل!','مذهل!'],OOPS=['لا بأس، تعلّم منها!','قريبًا تصيبها!','حاول في الجولة القادمة!'];
 const pick=a=>a[Math.floor(Math.random()*a.length)];
@@ -55,7 +55,7 @@ function home(){
 function subject(s){
   const p=prog();
   app.innerHTML=chronoCard(s)+s.sections.map(sec=>`<h2>${sec.name}</h2><div class="path">`+sec.lessons.map((l,i)=>{const r=p[l.id];
-    return `<div class="node ${i%2?'r':'l'}" data-l="${l.id}"><span class="dot ${r&&r.pct>=70?'done':''}">${i+1}</span><div><b>${l.title}</b><small>${starsHtml(stars(r?r.pct:0))}</small></div></div>`}).join('')+'</div>').join('');
+    return `<div class="node ${i%2?'r':'l'}" data-l="${l.id}"><span class="dot ${r&&r.pct>=70?'done':''}">${i+1}</span><div><b dir="auto">${l.title}</b><small>${starsHtml(stars(r?r.pct:0))}</small></div></div>`}).join('')+'</div>').join('');
   chronoBind(s);
   app.querySelectorAll('.node').forEach(e=>e.onclick=()=>{
     const l=s.sections.flatMap(x=>x.lessons).find(x=>x.id==e.dataset.l);go(()=>lesson(s,l),l.title,s.color)});
@@ -63,7 +63,7 @@ function subject(s){
 const videoHtml=([id,s=0,e=0])=>`<h2>🎬 شرح الدرس بالفيديو</h2><div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0${s?'&start='+s:''}${e?'&end='+e:''}" title="فيديو الدرس" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div><p class="hint"><a href="https://youtu.be/${id}${s?'?t='+s:''}" target="_blank" rel="noopener">إن لم يعمل الفيديو هنا، شاهده على يوتيوب</a></p>`;
 function lesson(s,l){
   const r=prog()[l.id],ex=(window.EXAMS||[]).filter(e=>[].concat(e.l).includes(l.id));
-  app.innerHTML=`<h2>${l.title}</h2>${l.qs.length?`<div class="acts"><div class="btn" id="go">ابدأ الاختبار (${l.qs.length} سؤالًا)</div></div>${(()=>{const sv=qload();return sv&&sv.lid===l.id?`<div class="acts"><div class="btn alt" id="rs">⏯ تابع من حيث توقفت (${sv.i+1} / ${sv.idx.length})</div></div>`:''})()}${r?`<p class="hint">آخر نتيجة: ${r.last??r.pct}% · أفضل نتيجة: ${r.pct}%</p>`:''}`:'<p class="hint">لم تُضف أسئلة هذا الدرس بعد.</p>'}
+  app.innerHTML=`<h2 dir="auto">${l.title}</h2>${l.qs.length?`<div class="acts"><div class="btn" id="go">ابدأ الاختبار (${l.qs.length} سؤالًا)</div></div>${(()=>{const sv=qload();return sv&&sv.lid===l.id?`<div class="acts"><div class="btn alt" id="rs">⏯ تابع من حيث توقفت (${sv.i+1} / ${sv.idx.length})</div></div>`:''})()}${r?`<p class="hint">آخر نتيجة: ${r.last??r.pct}% · أفضل نتيجة: ${r.pct}%</p>`:''}`:'<p class="hint">لم تُضف أسئلة هذا الدرس بعد.</p>'}
   ${recBtn(l)}
   ${l.v?videoHtml(l.v):''}
   <div id="pdf" class="pdf"><p class="hint">جارٍ تحميل الدرس…</p></div>
@@ -108,13 +108,14 @@ function quiz(s,l,resume){
     S={sid:s.id,lid:l.id,n:l.qs.length,idx:shuffle(l.qs.map((_,k)=>k)),i:0,right:0,wrong:[],combo:0,gain:0,round:0,opts:null,sel:null};
   }
   testActive={type:'quiz',s,l};
+  const FD=s.id==='fr'?' dir="ltr" lang="fr"':'';
   const draw=()=>{
     if(S.i>=S.idx.length)return done();
     const item=l.qs[S.idx[S.i]],q=item[0],a=item[1];
     if(!S.opts)S.opts=shuffle(item.slice(1));
     qsave(S);
     const opts=S.opts;
-    app.innerHTML=`<div class="bar"><i style="width:${S.i/S.idx.length*100}%"></i></div><p class="cnt">${S.i+1} / ${S.idx.length}${S.combo>1?` <span class="combo">🔥 ×${S.combo}</span>`:''}</p><div class="qbox">${esc(q)}</div>`+opts.map((o,k)=>`<button class="opt"><span class="ltr">${'أبجد'[k]}</span>${esc(o)}</button>`).join('')+'<div id="nx"></div>';
+    app.innerHTML=`<div class="bar"><i style="width:${S.i/S.idx.length*100}%"></i></div><p class="cnt">${S.i+1} / ${S.idx.length}${S.combo>1?` <span class="combo">🔥 ×${S.combo}</span>`:''}</p><div class="qbox"${FD}>${esc(q)}</div>`+opts.map((o,k)=>`<button class="opt"${FD}><span class="ltr">${(FD?'ABCD':'أبجد')[k]}</span>${esc(o)}</button>`).join('')+'<div id="nx"></div>';
     const mark=k=>{
       const good=opts[k]===a,bs=app.querySelectorAll('.opt');
       bs.forEach((x,j)=>{x.disabled=true;if(opts[j]===a)x.classList.add('ok')});
