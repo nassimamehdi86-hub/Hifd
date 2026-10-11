@@ -81,3 +81,5 @@ textarea{width:100%;padding:12px 16px;border:3px solid var(--c);border-radius:20
 /* الفرنسية: اتجاه من اليسار إلى اليمين */
 .qbox[dir=ltr],.opt[dir=ltr],textarea[dir=ltr]{text-align:left}
 .mdl[dir=ltr]{text-align:left;border-right:0;border-left:8px solid #22B35E}
+.qtr{font:400 17px/1.7 'Lalezar';color:#6b6591;text-align:right;border-top:2px dashed #e3def5;margin-top:10px;padding-top:8px}
+.pdf img{display:block;width:100%;height:auto;margin:0 0 14px;border-radius:18px;box-shadow:0 5px 0 rgba(42,31,92,.2);background:#fff}

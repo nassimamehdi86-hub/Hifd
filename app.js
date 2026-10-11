@@ -64,19 +64,29 @@ const videoHtml=([id,s=0,e=0])=>`<h2>🎬 شرح الدرس بالفيديو</h2
 function lesson(s,l){
   const r=prog()[l.id],ex=(window.EXAMS||[]).filter(e=>[].concat(e.l).includes(l.id));
   app.innerHTML=`<h2 dir="auto">${l.title}</h2>${l.qs.length?`<div class="acts"><div class="btn" id="go">ابدأ الاختبار (${l.qs.length} سؤالًا)</div></div>${(()=>{const sv=qload();return sv&&sv.lid===l.id?`<div class="acts"><div class="btn alt" id="rs">⏯ تابع من حيث توقفت (${sv.i+1} / ${sv.idx.length})</div></div>`:''})()}${r?`<p class="hint">آخر نتيجة: ${r.last??r.pct}% · أفضل نتيجة: ${r.pct}%</p>`:''}`:'<p class="hint">لم تُضف أسئلة هذا الدرس بعد.</p>'}
-  ${recBtn(l)}
+  ${recBtn(l)}${l.acts?`<div class="acts"><div class="btn alt" id="ac">✏️ الأنشطة والتمارين (${l.acts.reduce((n,g)=>n+g.items.length,0)})</div></div>`:''}
   ${l.v?videoHtml(l.v):''}
   <div id="pdf" class="pdf"><p class="hint">جارٍ تحميل الدرس…</p></div>
   <div class="acts"><a class="btn alt" href="${l.pdf}" target="_blank" rel="noopener">فتح الملف في صفحة مستقلة</a></div><div id="exb"></div>`;
   if(l.qs.length)$('#go').onclick=()=>go(()=>quiz(s,l),l.title,s.color);
   if($('#rs'))$('#rs').onclick=()=>go(()=>quiz(s,l,true),l.title,s.color);
   if($('#rc'))$('#rc').onclick=()=>go(()=>recite(s,l),l.title,s.color);
+  if($('#ac'))$('#ac').onclick=()=>go(()=>activities(s,l),l.title,s.color);
   const sx=list=>{const b=$('#exb');if(!list.length||!b)return;const was=$('#exW')&&!$('#exW').hidden;b.innerHTML=examHtml(list);bindAns(b);
     const w=$('#exW'),t=$('#exT'),lab=t.textContent.replace(/ [▾▴]$/,'');
     const set=o=>{w.hidden=!o;t.textContent=lab+(o?' ▴':' ▾')};set(was);t.onclick=()=>set(w.hidden)};
   sx(ex);
   if(db)db.collection('exams').where('l','array-contains',l.id).get().then(q=>{const ids=new Set(ex.map(e=>e.id));sx(ex.concat(q.docs.filter(d=>!ids.has(d.id)).map(d=>d.data())))}).catch(()=>{});
-  renderPdf(l.pdf,$('#pdf'));
+  l.pg?renderImgs(l,$('#pdf')):renderPdf(l.pdf,$('#pdf'));
+}
+/* نافذة الأنشطة والتمارين: التمرين ثم زر «أظهر الحل» */
+function activities(s,l){
+  const fr=s.id==='fr',D=fr?' dir="ltr" lang="fr"':'',st='style="font:600 18px/1.9 Tajawal;white-space:pre-line"';
+  app.innerHTML=`<h2 dir="auto">✏️ الأنشطة والتمارين</h2><p class="hint">حاول الحل بنفسك أولًا، ثم اضغط «أظهر الحل» (الحلول من «Je me corrige» في ملف الدرس).</p>`+
+  l.acts.map((g,i)=>`<h2 dir="auto">${esc(g.h)}</h2><div class="qbox"${D} ${st}>${esc(g.t)}${g.ar?`<div class="qtr" dir="rtl">${esc(g.ar)}</div>`:''}</div>`+
+    g.items.map((it,k)=>`<div class="qbox"${D} ${st}>${esc(it.q)}${it.ar?`<div class="qtr" dir="rtl">${esc(it.ar)}</div>`:''}</div>`+
+      (it.a?`<div class="acts"><div class="btn alt" data-a="ac${i}-${k}">أظهر الحل</div></div><div class="qbox" id="aac${i}-${k}" hidden${D} ${st}>${esc(it.a)}</div>`:'')).join('')).join('');
+  bindAns(app);
 }
 function examHtml(ex){
   const ys=[...new Set(ex.map(e=>e.y))].sort((a,b)=>b-a),st='style="font:600 18px/1.9 Tajawal;white-space:pre-line"';
@@ -84,6 +94,16 @@ function examHtml(ex){
   ys.map(y=>`<h2>شهادة ${y}</h2>`+ex.filter(e=>e.y===y).map((e,i)=>`<div class="qbox" ${st}>${esc(e.t)}</div><div class="acts"><div class="btn alt" data-a="${y}-${i}">أظهر الحل</div></div><div class="qbox" id="a${y}-${i}" hidden ${st}>${esc(e.a||'لم يُضف الحل بعد.')}</div>`).join('')).join('')+'</div>';
 }
 function bindAns(root){root.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const a=$('#a'+b.dataset.a);a.hidden=!a.hidden;b.textContent=a.hidden?'أظهر الحل':'أخفِ الحل'})}
+/* صفحات الدرس كصور جاهزة (pdf/<id>-<n>.jpg): تظهر بدقة وخطوط سليمة على كل الهواتف؛ وإن فُقدت الصورة يعود العرض إلى PDF */
+function renderImgs(l,box){
+  box.innerHTML='';
+  for(let n=1;n<=l.pg;n++){
+    const im=new Image();im.alt='صفحة '+n+' من الدرس';im.decoding='async';
+    im.onerror=()=>{if(!box.dataset.fb){box.dataset.fb=1;box.innerHTML='<p class="hint">جارٍ تحميل الدرس…</p>';renderPdf(l.pdf,box)}};
+    im.src=l.pdf.replace(/\.pdf$/,'-'+n+'.jpg');
+    box.appendChild(im);
+  }
+}
 async function renderPdf(url,box){
   try{
     pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -115,7 +135,7 @@ function quiz(s,l,resume){
     if(!S.opts)S.opts=shuffle(item.slice(1));
     qsave(S);
     const opts=S.opts;
-    app.innerHTML=`<div class="bar"><i style="width:${S.i/S.idx.length*100}%"></i></div><p class="cnt">${S.i+1} / ${S.idx.length}${S.combo>1?` <span class="combo">🔥 ×${S.combo}</span>`:''}</p><div class="qbox"${FD}>${esc(q)}</div>`+opts.map((o,k)=>`<button class="opt"${FD}><span class="ltr">${(FD?'ABCD':'أبجد')[k]}</span>${esc(o)}</button>`).join('')+'<div id="nx"></div>';
+    app.innerHTML=`<div class="bar"><i style="width:${S.i/S.idx.length*100}%"></i></div><p class="cnt">${S.i+1} / ${S.idx.length}${S.combo>1?` <span class="combo">🔥 ×${S.combo}</span>`:''}</p><div class="qbox"${FD}>${esc(q)}${l.tr&&l.tr[S.idx[S.i]]?`<div class="qtr" dir="rtl">${esc(l.tr[S.idx[S.i]])}</div>`:''}</div>`+opts.map((o,k)=>`<button class="opt"${FD}><span class="ltr">${(FD?'ABCD':'أبجد')[k]}</span>${esc(o)}</button>`).join('')+'<div id="nx"></div>';
     const mark=k=>{
       const good=opts[k]===a,bs=app.querySelectorAll('.opt');
       bs.forEach((x,j)=>{x.disabled=true;if(opts[j]===a)x.classList.add('ok')});

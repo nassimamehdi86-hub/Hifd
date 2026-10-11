@@ -613,5 +613,90 @@ f12.rec=[
  ["Réécrire une thèse avec un verbe d'opinion","« Tlemcen est une très belle ville » devient « J'affirme que Tlemcen est une très belle ville ».",["tlemcen","affirme","belle","ville"]]
 ];
 
+/* ترجمة أسئلة الفرنسية إلى العربية (تظهر تحت السؤال) — بنفس ترتيب qs */
+f11.tr=[
+ "«النص الحجاجي» كيف نقولها بالفرنسية؟",
+ "ما هو النص الحجاجي؟",
+ "ما هدف الكاتب في النص الحجاجي؟",
+ "ماذا يدافع عنه الكاتب في النص الحجاجي؟",
+ "ماذا يستعمل الكاتب لإقناع القارئ؟",
+ "ماذا نسمّي الفكرة أو الرأي الذي يدافع عنه الكاتب؟",
+ "كم عدد أجزاء البنية الحجاجية؟",
+ "ما ترتيب أجزاء البنية الحجاجية؟",
+ "ما هو الجزء الأول من البنية الحجاجية؟",
+ "ماذا تتضمّن المقدمة؟",
+ "ماذا يعني الموضوع (Le thème)؟",
+ "أيّ كلمة تدلّ على موضوع النص؟",
+ "ماذا تعني الأطروحة (La thèse)؟",
+ "أيّ مجموعة كلمات تضمّ مرادفات كلمة «thèse»؟",
+ "ما هو الجزء الثاني من البنية الحجاجية؟",
+ "في أيّ جزء نجد الحجج والأمثلة؟",
+ "ماذا نسمّي محتوى العرض (Le développement)؟",
+ "مِمَّ يتكوّن الجزء الحجاجي (L'argumentaire)؟",
+ "ما هي الحجج (Les arguments)؟",
+ "ما دور الأمثلة؟",
+ "ما دور روابط الترتيب (connecteurs d'énumération)؟",
+ "ما هو الجزء الثالث من البنية الحجاجية؟",
+ "ماذا تتضمّن الخاتمة؟",
+ "فيمَ تتمثّل الخلاصة (La synthèse)؟",
+ "ماذا يعني «إعادة صياغة الأطروحة»؟",
+ "في أيّ جزء نقدّم الموضوع والأطروحة؟",
+ "أيّ مخطط يلخّص البنية الحجاجية تلخيصًا صحيحًا؟"
+];
+f12.tr=[
+ "فيمَ تُستعمل أفعال الرأي وعبارات الرأي؟",
+ "«أفعال الرأي» كيف نقولها بالفرنسية؟",
+ "«عبارات الرأي» كيف نقولها بالفرنسية؟",
+ "أيّ فعل من هذه الأفعال هو فعل رأي؟",
+ "أيّ فعل من هذه الأفعال هو فعل رأي؟",
+ "أيّ فعل من هذه الأفعال هو فعل رأي؟",
+ "أيّ فعل من هذه الأفعال هو فعل رأي؟",
+ "أيّ فعل من هذه الأفعال هو فعل رأي؟",
+ "أيّ مجموعة تضمّ أفعال رأي فقط؟",
+ "أيّ عبارة من هذه العبارات هي عبارة رأي؟",
+ "أيّ عبارة من هذه العبارات هي عبارة رأي؟",
+ "أيّ مجموعة تضمّ عبارات رأي فقط؟",
+ "أكمل: «... ، عنابة مدينة سياحية بامتياز.»",
+ "في جملة «أنا مقتنع(ة) بأن الجزائر من أجمل بلدان العالم»، ما هو فعل الرأي؟",
+ "في جملة «في رأيي، جيجل لؤلؤة الساحل الجزائري»، ما هي «À mon avis»؟",
+ "في جملة «أعتقد أن ولاية وهران تستحق الزيارة»، ما هو فعل الرأي؟",
+ "في جملة «حسب رأيي، عنابة مدينة سياحية بامتياز»، ما هي «D'après moi»؟",
+ "في جملة «أؤكّد أن صحراءنا وجهة سياحية ممتازة في الشتاء»، ما هو فعل الرأي؟",
+ "في جملة «في رأيي، قطاع السياحة في الجزائر بحاجة إلى التشجيع»، ما هي عبارة الرأي؟",
+ "أكمل: «عشّاق الطبيعة ... أن المنتزه الوطني الطاسيلي ناجر كنز من التنوّع البيولوجي.»",
+ "أكمل: «أغلب السيّاح ... أن الصحراء الجزائرية من أكثر الأماكن سحرًا في الكوكب.»",
+ "أكمل: «المتنزّهون ... أن المنتزه الوطني قوراية يقدّم مناظر بانورامية رائعة على المتوسط.»",
+ "كيف نعيد كتابة «تلمسان مدينة جميلة جدًا» باستعمال فعل رأي؟",
+ "كيف نعيد كتابة «جبال تيكجدة مبهرة» باستعمال فعل رأي؟",
+ "في جملة «أنا مقتنع(ة) بأن الساحل الجزائري رائع»، ما هو فعل الرأي؟"
+];
+
+/* أنشطة درس f12 — من ملف الدرس: « Je m'entraîne » + الحلول من « Je me corrige » */
+f12.acts=[
+ {h:"Activité 01",t:"Souligne les verbes et les expressions d'opinion dans les phrases suivantes.",ar:"ضع خطًا تحت أفعال الرأي وعبارات الرأي في الجمل التالية.",items:[
+  {q:"a. Je suis convaincu que l'Algérie est l'un des plus beaux pays au monde.",ar:"أنا مقتنع بأن الجزائر من أجمل بلدان العالم.",a:"Je suis convaincu que l'Algérie est l'un des plus beaux pays au monde.\n← suis convaincu (verbe d'opinion)"},
+  {q:"b. A mon avis, le secteur du tourisme en Algérie a besoin d'encouragement.",ar:"في رأيي، قطاع السياحة في الجزائر بحاجة إلى التشجيع.",a:"A mon avis, le secteur du tourisme en Algérie a besoin d'encouragement.\n← A mon avis (expression d'opinion)"},
+  {q:"c. Je pense que la wilaya d'Oran mérite d'être visitée.",ar:"أعتقد أن ولاية وهران تستحق الزيارة.",a:"Je pense que la wilaya d'Oran mérite d'être visitée.\n← pense (verbe d'opinion)"},
+  {q:"d. J'affirme que notre Sahara est une excellente destination touristique en hiver.",ar:"أؤكد أن صحراءنا وجهة سياحية ممتازة في الشتاء.",a:"J'affirme que notre Sahara est une excellente destination touristique en hiver.\n← affirme (verbe d'opinion)"},
+  {q:"e. D'après moi, Annaba est une ville touristique par excellence.",ar:"حسب رأيي، عنابة مدينة سياحية بامتياز.",a:"D'après moi, Annaba est une ville touristique par excellence.\n← D'après moi (expression d'opinion)"}
+ ]},
+ {h:"Activité 02",t:"Complète par le verbe d'opinion qui convient : estiment, affirment, pensent.",ar:"أكمل بفعل الرأي المناسب: estiment, affirment, pensent.",items:[
+  {q:"a. La plupart des touristes ………… que le Sahara algérien est l'un des endroits les plus fascinants de la planète.",ar:"أغلب السياح ………… أن الصحراء الجزائرية من أكثر الأماكن سحرًا في الكوكب.",a:"affirment\nLa plupart des touristes affirment que le Sahara algérien est l'un des endroits les plus fascinants de la planète."},
+  {q:"b. Les amateurs de la nature ………… que le parc national de Tassili n'Ajjer est un trésor de biodiversité.",ar:"عشّاق الطبيعة ………… أن المنتزه الوطني الطاسيلي ناجر كنز من التنوّع البيولوجي.",a:"estiment\nLes amateurs de la nature estiment que le parc national de Tassili n'Ajjer est un trésor de biodiversité."},
+  {q:"c. Les randonneurs ………… que le parc national de Gouraya offre des vues panoramiques incroyables sur la Méditerranée.",ar:"المتنزّهون ………… أن المنتزه الوطني قوراية يقدّم مناظر بانورامية رائعة على المتوسط.",a:"pensent\nLes randonneurs pensent que le parc national de Gouraya offre des vues panoramiques incroyables sur la Méditerranée."}
+ ]},
+ {h:"Activité 03",t:"Réécris les thèses suivantes en employant des verbes d'opinion de ton choix.",ar:"أعد كتابة الأطروحات التالية باستعمال أفعال رأي من اختيارك.",items:[
+  {q:"a. La côte algérienne est magnifique.",ar:"الساحل الجزائري رائع.",a:"Je suis persuadé(e) que la côte algérienne est magnifique.\n(مثال للحل — يمكنك اختيار فعل رأي آخر)"},
+  {q:"b. Tlemcen est une très belle ville.",ar:"تلمسان مدينة جميلة جدًا.",a:"J'affirme que Tlemcen est une très belle ville.\n(مثال للحل — يمكنك اختيار فعل رأي آخر)"},
+  {q:"c. Les monts de Tikjda sont éblouissants.",ar:"جبال تيكجدة مبهرة.",a:"Je trouve que les monts de Tikjda sont éblouissants.\n(مثال للحل — يمكنك اختيار فعل رأي آخر)"}
+ ]},
+ {h:"J'écris",t:"Construis deux phrases dans lesquelles tu donneras ton point de vue sur une ville algérienne en employant un verbe d'opinion.",ar:"ابنِ جملتين تعبّر فيهما عن وجهة نظرك في مدينة جزائرية باستعمال فعل رأي.",items:[
+  {q:"Écris tes deux phrases sur ton cahier.",ar:"اكتب جملتيك في دفترك.",a:"الإجابة حرّة. نموذج من الدرس:\nA mon avis, Jijel est la perle du littoral algérien."}
+ ]}
+];
+
+/* صفحات الدرس كصور: pdf/f11-1.jpg و pdf/f12-1.jpg (درس فقط؛ الأنشطة في نافذتها الخاصة) */
+f11.pg=1;f12.pg=1;
+
 /* جدول المراجعة الأسبوعي (نصف ساعة حفظ في اليوم، يتكرر كل أسبوع). المفتاح: رقم اليوم (0=الأحد ... 6=السبت). الرياضيات والفيزياء والعلوم خارج البرنامج. غيّر الجدول من هنا. */
 window.SCHEDULE={0:'hist',1:'geo',2:'isl',3:'civ'};
