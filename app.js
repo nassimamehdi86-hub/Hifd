@@ -60,14 +60,16 @@ function subject(s){
   app.querySelectorAll('.node').forEach(e=>e.onclick=()=>{
     const l=s.sections.flatMap(x=>x.lessons).find(x=>x.id==e.dataset.l);go(()=>lesson(s,l),l.title,s.color)});
 }
+/* ملخص الدرس: رابط Google Drive فقط (يُضبط في links.js) — لا ملفات PDF داخل التطبيق ليبقى خفيفًا */
+const driveUrl=id=>{let u=String((window.DRIVE||{})[id]||'').trim();if(!u)return '';if(!/^https?:/.test(u))u='https://drive.google.com/file/d/'+u+'/view';return u};
+const driveBtn=l=>{const u=driveUrl(l.id);return u?`<div class="acts"><a class="btn" href="${u}" target="_blank" rel="noopener">📄 افتح ملخص الدرس في Google Drive</a></div>`:'<p class="hint">رابط ملخص هذا الدرس لم يُضف بعد.</p>'};
 const videoHtml=([id,s=0,e=0])=>/\.mp4$/.test(id)?`<h2>🎬 شرح الدرس بالفيديو</h2><div class="vid vloc"><video src="${id}" controls playsinline preload="metadata"></video></div>`:`<h2>🎬 شرح الدرس بالفيديو</h2><div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0${s?'&start='+s:''}${e?'&end='+e:''}" title="فيديو الدرس" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div><p class="hint"><a href="https://youtu.be/${id}${s?'?t='+s:''}" target="_blank" rel="noopener">إن لم يعمل الفيديو هنا، شاهده على يوتيوب</a></p>`;
 function lesson(s,l){
   const r=prog()[l.id],ex=(window.EXAMS||[]).filter(e=>[].concat(e.l).includes(l.id));
   app.innerHTML=`<h2 dir="auto">${l.title}</h2>${l.qs.length?`<div class="acts"><div class="btn" id="go">ابدأ الاختبار (${l.qs.length} سؤالًا)</div></div>${(()=>{const sv=qload();return sv&&sv.lid===l.id?`<div class="acts"><div class="btn alt" id="rs">⏯ تابع من حيث توقفت (${sv.i+1} / ${sv.idx.length})</div></div>`:''})()}${r?`<p class="hint">آخر نتيجة: ${r.last??r.pct}% · أفضل نتيجة: ${r.pct}%</p>`:''}`:'<p class="hint">لم تُضف أسئلة هذا الدرس بعد.</p>'}
   ${recBtn(l)}${l.acts?`<div class="acts"><div class="btn alt" id="ac">✏️ الأنشطة والتمارين (${l.acts.reduce((n,g)=>n+g.items.length,0)})</div></div>`:''}
   ${l.v?videoHtml(l.v):''}
-  <div id="pdf" class="pdf"><p class="hint">جارٍ تحميل الدرس…</p></div>
-  <div class="acts"><a class="btn alt" href="${l.pdf}" target="_blank" rel="noopener">فتح الملف في صفحة مستقلة</a></div><div id="exb"></div>`;
+  ${l.pg?'<div id="pdf" class="pdf"></div>':''}${driveBtn(l)}<div id="exb"></div>`;
   if(l.qs.length)$('#go').onclick=()=>go(()=>quiz(s,l),l.title,s.color);
   if($('#rs'))$('#rs').onclick=()=>go(()=>quiz(s,l,true),l.title,s.color);
   if($('#rc'))$('#rc').onclick=()=>go(()=>recite(s,l),l.title,s.color);
@@ -77,7 +79,7 @@ function lesson(s,l){
     const set=o=>{w.hidden=!o;t.textContent=lab+(o?' ▴':' ▾')};set(was);t.onclick=()=>set(w.hidden)};
   sx(ex);
   if(db)db.collection('exams').where('l','array-contains',l.id).get().then(q=>{const ids=new Set(ex.map(e=>e.id));sx(ex.concat(q.docs.filter(d=>!ids.has(d.id)).map(d=>d.data())))}).catch(()=>{});
-  l.pg?renderImgs(l,$('#pdf')):renderPdf(l.pdf,$('#pdf'));
+  if(l.pg)renderImgs(l,$('#pdf'));
 }
 /* نافذة الأنشطة والتمارين التفاعلية: اضغط على الإجابة الصحيحة، ثم «أظهر الحل» عند الحاجة */
 function activities(s,l){
@@ -162,7 +164,7 @@ function renderImgs(l,box){
   box.innerHTML='';
   for(let n=1;n<=l.pg;n++){
     const im=new Image();im.alt='صفحة '+n+' من الدرس';im.decoding='async';
-    im.onerror=()=>{if(!box.dataset.fb){box.dataset.fb=1;box.innerHTML='<p class="hint">جارٍ تحميل الدرس…</p>';renderPdf(l.pdf,box)}};
+    im.onerror=()=>{if(!box.dataset.fb){box.dataset.fb=1;box.innerHTML='<p class="hint">تعذّر تحميل صور الدرس — استعمل زر Google Drive.</p>'}};
     im.src=l.pdf.replace(/\.pdf$/,'-'+n+'.jpg');
     box.appendChild(im);
   }
