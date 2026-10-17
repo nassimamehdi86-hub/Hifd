@@ -103,3 +103,6 @@ textarea{width:100%;padding:12px 16px;border:3px solid var(--c);border-radius:20
 .rt:active{transform:scale(.98)}
 
 .mst{margin:6px 2px;font-size:15px;font-weight:700;color:#7a2f55;background:#fff0f6;border-radius:12px;padding:6px 10px}.mst:empty{display:none}
+
+.eye{margin-inline-start:auto;background:#fff0f6;border:0;border-radius:12px;padding:4px 10px;font-size:20px;cursor:pointer}
+.rsol{margin:-2px 0 8px;font-size:18px}

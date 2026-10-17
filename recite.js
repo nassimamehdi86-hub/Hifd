@@ -4,7 +4,7 @@
 const RLIMIT=12*3600*1000,RMAX=3,RPTS=[100,70,40],RPASS=.45;
 const AR_STOP=new Set('les des une est dans pour que qui par sur aux son ses ont sont avec ces cet cette mais في من على الى عن ان ما هو هي او ثم كل هذا هذه الذي التي بين كان يكون ذلك قد لا مع هذان هما انه انها التي الذين'.split(' '));
 function rnorm(s){
-  return String(s||'').replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+  return String(s||'').replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/(?<!\d)\d{1,3}(?:[\s,،٬]\d{3})+(?!\d)/g,m=>m.replace(/[\s,،٬]/g,''))
     .replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/œ/g,'oe').replace(/æ/g,'ae').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .replace(/[^\u0621-\u064A0-9a-zA-Z\s]/g,' ').toLowerCase().replace(/\s+/g,' ').trim();
 }
@@ -76,16 +76,20 @@ function rsave(s,l,items,title,score){
 /* قائمة كل العناوين (رئيسية وفرعية): يضغط التلميذ على عنوان فيبدأ التسميع مباشرة */
 function recite(s,l){
   const items=getRec(l),n=items.length,lv=l.rlv||[];
+  let showAll=false;   /* الحلول مخفية دائمًا عند بدء أي تسميع */
   const FD=s.id==='fr'?' dir="ltr" lang="fr"':'';
   testActive=null;rstopMic();
   const list=()=>{
-    testActive=null;
+    testActive=null;showAll=false;
     const P=store.get('recpt',{})[l.id]||{},done=items.filter(it=>P[it[0]]>0).length;
     app.innerHTML=`<div class="rtop"><span>🎙️ التسميع</span><span>${done} / ${n}</span></div><div class="bar"><i style="width:${done/n*100}%"></i></div>
     <p class="hint">${done===n?'🏆 أحسنت! سمّعت كل العناوين — يمكنك إعادة أي عنوان':'اضغط على أي عنوان وابدأ التسميع من حفظك'}</p>
-    <div class="rlist2"${FD}>${items.map((it,k)=>{const v=P[it[0]];return `<div class="rt lv${Math.min(3,lv[k]||0)}" data-k="${k}"><span>${v>=100?'✅':v>0?'🟡':v===0?'❌':'⚪'}</span><b>${esc(it[0])}</b></div>`}).join('')}</div>
+    <div class="acts"><div class="btn alt" id="sa">👁️ إظهار الحلول للمراجعة</div></div>
+    <div class="rlist2"${FD}>${items.map((it,k)=>{const v=P[it[0]];return `<div class="rt lv${Math.min(3,lv[k]||0)}" data-k="${k}"><span>${v>=100?'✅':v>0?'🟡':v===0?'❌':'⚪'}</span><b>${esc(it[0])}</b><button class="eye" type="button" data-e="${k}" aria-label="إظهار الحل">👁️</button></div><div class="mdl rsol"${FD} id="sol${k}" hidden>${esc(it[1])}</div>`}).join('')}</div>
     <div class="acts"><div class="btn alt rst" id="rst">🔄 ابدأ من الأول</div></div>`;
     app.querySelectorAll('.rt').forEach(e=>e.onclick=()=>one(+e.dataset.k));
+    app.querySelectorAll('.eye').forEach(b=>b.onclick=e=>{e.stopPropagation();const d=$('#sol'+b.dataset.e);d.hidden=!d.hidden;b.textContent=d.hidden?'👁️':'🙈'});
+    $('#sa').onclick=()=>{showAll=!showAll;app.querySelectorAll('.rsol').forEach(d=>d.hidden=!showAll);app.querySelectorAll('.eye').forEach(b=>b.textContent=showAll?'🙈':'👁️');$('#sa').textContent=showAll?'🙈 إخفاء الحلول':'👁️ إظهار الحلول للمراجعة'};
     $('#rst').onclick=()=>{if(confirm('سيُمسح تقدّمك في هذا التسميع لتبدأ من العنوان الأول. هل تريد ذلك؟')){const a=store.get('recpt',{});delete a[l.id];store.set('recpt',a);list()}};
   };
   const one=k=>{
@@ -97,9 +101,11 @@ function recite(s,l){
     <p class="dots">${dots()}</p>
     <textarea id="ans" rows="5"${FD} placeholder="سمّع من حفظك… أو اكتب إجابتك بنفسك" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
     <div class="acts"><div class="btn alt" id="mic">🎙️ ابدأ التسميع</div><div class="btn" id="chk">تحقّق ✔</div></div><div id="fb"></div>
-    <div class="acts"><div class="btn alt rst" id="lst">📋 قائمة العناوين</div></div>`;
+    <div class="acts"><div class="btn alt" id="rty">🔄 أعد المحاولة</div><div class="btn alt rst" id="lst">📋 قائمة العناوين</div></div>`;
     const ta=$('#ans');
     $('#lst').onclick=()=>{rstopMic();list()};
+    /* إعادة المحاولة بلا حدّ: تمسح الخانة وتبدأ من جديد دون أن تستهلك محاولة */
+    $('#rty').onclick=()=>{rstopMic();ta.value='';const ms=document.querySelector('.mst');if(ms)ms.innerHTML='';$('#fb').innerHTML='';ta.focus()};
     ['paste','drop','cut','copy','contextmenu'].forEach(ev=>ta.addEventListener(ev,e=>e.preventDefault()));
     initMic($('#mic'),ta,s.id==='fr'?'fr-FR':'ar-DZ');
     const end=pass=>{
@@ -128,6 +134,8 @@ function recite(s,l){
   list();
 }
 /* دمج نتائج التعرّف الصوتي دون تكرار: في بعض هواتف أندرويد تعيد كل نتيجة الكلمات السابقة، فنحذف الجزء المكرّر */
+/* الأرقام الكبيرة: المتصفح قد يكتب 2918 على شكل «2 918» أو «2,918» أو بأرقام هندية؛ نوحّدها رقمًا واحدًا متصلًا */
+function rfixnum(t){return String(t||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/(?<!\d)\d{1,3}(?:[\s,،٬]\d{3})+(?!\d)/g,m=>m.replace(/[\s,،٬]/g,''))}
 function rmerge(acc,t){
   t=String(t||'').trim();if(!t)return acc;if(!acc)return t;
   const a=acc.split(/\s+/),b=t.split(/\s+/),na=a.map(rnorm),nb=b.map(rnorm);
@@ -157,6 +165,7 @@ function initMic(btn,ta,lang){
     r._flush=()=>{shw=tgt.slice();if(tm){clearInterval(tm);tm=null}paint()};
     r.onresult=e=>{
       let acc='';for(let i=0;i<e.results.length;i++)acc=rmerge(acc,e.results[i][0].transcript);
+      acc=rfixnum(acc);
       tgt=acc.split(/\s+/).filter(Boolean);
       let k=0;while(k<shw.length&&k<tgt.length&&shw[k]===tgt[k])k++;   /* إن غيّر المتصفح كلمات مؤقتة نصحّح من أول اختلاف */
       if(k<shw.length){shw=shw.slice(0,k);paint()}
