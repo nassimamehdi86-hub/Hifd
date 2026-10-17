@@ -1,7 +1,7 @@
-/* اختبار التسميع: التلميذ يسمّع كل عنوان من الدرس (صوتًا أو كتابةً) — 3 محاولات لكل عنوان ثم يظهر الحل. لا مؤقت هنا: الوقت يُنظَّم بكرونو حصة المادة (chrono.js).
+/* اختبار التسميع: التلميذ يسمّع كل عنوان من الدرس (صوتًا أو كتابةً) — 3 محاولات لكل عنوان ثم يظهر الحل. التصحيح صارم: يجب ذكر كل المعلومات المهمة. لا مؤقت هنا: الوقت يُنظَّم بكرونو حصة المادة (chrono.js).
    عناصر الدرس: l.rec = [[العنوان, الإجابة النموذجية, كلمات مفتاحية اختيارية], ...]
    إن لم يوجد l.rec يُشتقّ الاختبار من أسئلة الدرس (qs) ما عدا الأسئلة التي تعتمد على رؤية الخيارات. */
-const RLIMIT=12*3600*1000,RMAX=3,RPTS=[100,70,40],RPASS=.45;
+const RLIMIT=12*3600*1000,RMAX=3,RPTS=[100,70,40],RPASS=.85;
 const AR_STOP=new Set('les des une est dans pour que qui par sur aux son ses ont sont avec ces cet cette mais في من على الى عن ان ما هو هي او ثم كل هذا هذه الذي التي بين كان يكون ذلك قد لا مع هذان هما انه انها التي الذين'.split(' '));
 function rnorm(s){
   return String(s||'').replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/(?<!\d)\d{1,3}(?:[\s,،٬]\d{3})+(?!\d)/g,m=>m.replace(/[\s,،٬]/g,''))
@@ -32,18 +32,23 @@ function rsame0(a,b){
   return a.length>=5&&b.length>=5&&rlev(a,b)<=(a.length>=8&&b.length>=8?2:1);   /* خطأ إملائي أو تعرّف صوتي غير دقيق */
 }
 /* يقبل المعنى الصحيح ولو بألفاظ مختلفة: كلمات الجواب كلها (لا المفتاحية فقط) + مرادفات + تقارب إملائي؛ ولا تُحسب كلمات العنوان نفسه */
-function rcheck(item,text){
+/* صرامة التصحيح: يجب ذكر معظم المعلومات المهمة (85%) — وكلها إن كانت أربعًا أو أقل — وكل الأرقام والتواريخ. تبقى المرادفات والتقارب الإملائي مقبولة */
+function rcheckX(item,text){
   const tt=rtok(item[0]),notT=w=>!tt.some(t=>rsame0(t,w));
-  const got=rtok(text);if(!got.length)return false;
-  const frac=ks=>ks.length?ks.filter(k=>got.some(g=>rsame(g,k))).length/ks.length:0;
+  const got=rtok(text);if(!got.length)return {ok:false,pct:0};
+  const has=k=>got.some(g=>rsame(g,k));
   let keys=[...new Set(item[2]&&item[2].length?item[2].flatMap(rtok):rtok(item[1]))];
   const k2=keys.filter(notT);if(k2.length>=3)keys=k2;
-  const hit=Math.round(frac(keys)*keys.length);
-  if(keys.length&&frac(keys)>=RPASS&&hit>=Math.min(2,keys.length))return true;
-  let ans=[...new Set(rtok(item[1]))].filter(notT);
-  const ah=Math.round(frac(ans)*ans.length);
-  return ans.length>=3&&frac(ans)>=.4&&ah>=3;
+  const need=n=>n<=4?n:Math.ceil(n*RPASS);
+  const numsOk=keys.filter(k=>/^\d+$/.test(k)).every(has);
+  const kh=keys.filter(has).length;
+  if(keys.length&&kh>=need(keys.length)&&numsOk)return {ok:true,pct:100};
+  const ans=[...new Set(rtok(item[1]))].filter(notT),ah=ans.filter(has).length;
+  if(ans.length>=3&&ah>=need(ans.length)&&numsOk)return {ok:true,pct:100};
+  const pc=Math.max(keys.length?kh/keys.length:0,ans.length?ah/ans.length:0);
+  return {ok:false,pct:Math.min(95,Math.round(pc*100))};
 }
+const rcheck=(item,text)=>rcheckX(item,text).ok;
 function getRec(l){
   if(l.rec&&l.rec.length)return l.rec;
   /* لا عناوين: نسأل عن محتوى الدرس نفسه من أسئلته. الأسئلة المعتمدة على رؤية الخيارات (أي...؟) تُحوَّل إلى «اذكر...» والسلبية (ليس...) تُهمل */
@@ -121,11 +126,12 @@ function recite(s,l){
       const run=()=>{
       const text=ta.value.trim();
       if(text.length<2){$('#fb').innerHTML='<div class="fb b">اكتب أو سمّع إجابتك أولًا</div>';return}
-      if(rcheck(it,text)){rsave(s,l,items,it[0],RPTS[att]);SFX.ok(att===0?3:1);end(true)}
+      const rc=rcheckX(it,text);
+      if(rc.ok){rsave(s,l,items,it[0],RPTS[att]);SFX.ok(att===0?3:1);end(true)}
       else{
         att++;SFX.no();
         if(att>=RMAX){rsave(s,l,items,it[0],0);end(false)}
-        else{ta.value='';$('#fb').innerHTML=`<div class="fb b">ليست الإجابة المطلوبة بعد — حاول مجددًا (بقيت ${RMAX-att} ${RMAX-att===1?'محاولة':'محاولات'})</div>`;document.querySelector('.dots').innerHTML=dots()}
+        else{ta.value='';$('#fb').innerHTML=`<div class="fb b">إجابتك ناقصة (ذكرت نحو ${rc.pct}% من المعلومات المهمة) — اذكرها كلها وحاول مجددًا (بقيت ${RMAX-att} ${RMAX-att===1?'محاولة':'محاولات'})</div>`;document.querySelector('.dots').innerHTML=dots()}
       }
       };
       was?setTimeout(run,450):run();   /* ننتظر وصول آخر كلمات التسميع قبل التصحيح */
