@@ -24,12 +24,20 @@ function rsame(a,b){
   if(RSYN.some(g=>g.some(x=>rsame0(x,a))&&g.some(x=>rsame0(x,b))))return true;   /* مرادفات: نفس المعنى بلفظ آخر */
   return rsame0(a,b);
 }
+/* فهم نطق التلاميذ: المتصفح يخطئ في الحروف المتقاربة مخرجًا (ض/ظ/ذ/ز، ث/س/ص، ت/ط، ق/ك، ح/ه، ع/ء/أ) وفي حروف المدّ؛ نقارن «هيكل» الكلمة الصوتي */
+const RPHM={ض:'ز',ظ:'ز',ذ:'ز',ث:'س',ص:'س',ط:'ت',ق:'ك',ه:'ح',ع:'ا',ء:'ا'};
+function rpk(w){const x=rnorm(w).replace(/\s/g,'').replace(/[ضظذثصطقهعء]/g,c=>RPHM[c]);return (x[0]||'')+x.slice(1).replace(/[اوي]/g,'')}
+function rph(a,b){
+  if(a.length<3||b.length<3||!/[\u0621-\u064A]/.test(a)||!/[\u0621-\u064A]/.test(b))return false;
+  const ka=rpk(a),kb=rpk(b);if(ka.length<3||kb.length<3)return false;
+  return ka===kb||(ka.length>=4&&kb.length>=4&&rlev(ka,kb)<=1);
+}
 function rsame0(a,b){
   if(a===b)return true;
   if(a.length<4||b.length<4)return false;
   let i=0;while(i<a.length&&i<b.length&&a[i]===b[i])i++;
   if(i>=4&&i>=Math.min(a.length,b.length)-1)return true;
-  return a.length>=5&&b.length>=5&&rlev(a,b)<=(a.length>=8&&b.length>=8?2:1);   /* خطأ إملائي أو تعرّف صوتي غير دقيق */
+  return (a.length>=5&&b.length>=5&&rlev(a,b)<=(a.length>=8&&b.length>=8?2:1))||rph(a,b);   /* خطأ إملائي أو تعرّف صوتي غير دقيق */
 }
 /* يقبل المعنى الصحيح ولو بألفاظ مختلفة: كلمات الجواب كلها (لا المفتاحية فقط) + مرادفات + تقارب إملائي؛ ولا تُحسب كلمات العنوان نفسه */
 /* صرامة التصحيح: يجب ذكر معظم المعلومات المهمة (85%) — وكلها إن كانت أربعًا أو أقل — وكل الأرقام والتواريخ. تبقى المرادفات والتقارب الإملائي مقبولة */
@@ -68,6 +76,17 @@ function recBtn(l){
 let rTimer=null,rMic=null;
 /* منع نسخ الإجابة النموذجية (تحديد، نسخ، قائمة الضغط المطوّل، سحب) حتى لا تُلصق في التسميع */
 function rnocopy(root){(root||document).querySelectorAll('.nocopy').forEach(e=>['copy','cut','contextmenu','selectstart','dragstart'].forEach(ev=>e.addEventListener(ev,x=>x.preventDefault())))}
+/* تقريب الكلمة المنطوقة إلى كلمة الدرس: إن كُتبت الكلمة خطأً لكنها قريبة صوتيًا من كلمة في إجابة هذا العنوان نكتبها كما في الدرس */
+let rVocA=[],rVocB=[];
+function rvoc(txt){const out=[];String(txt||'').split(/\s+/).forEach(r=>{const o=r.replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[^\u0621-\u064A0-9a-zA-Z]/g,'');const k=rnorm(o);if(k.length>=3&&/[\u0621-\u064A]/.test(k)&&!out.some(x=>x.k===k))out.push({o,k})});return out}
+function rsetVoc(items,cur){rVocA=rvoc(items[cur][0]+' '+items[cur][1]);rVocB=rvoc(items.filter((_,i)=>i!==cur).map(x=>x[1]).join(' '))}
+function rsnap(w){
+  if(/\d/.test(w)||!/[\u0621-\u064A]/.test(w))return w;
+  const n=rnorm(w);if(n.length<3)return w;
+  const e=rVocA.find(x=>x.k===n)||rVocB.find(x=>x.k===n);if(e)return e.o;
+  const c=rVocA.find(x=>rph(n,x.k)||(n.length>=5&&x.k.length>=5&&rlev(n,x.k)<=1))||rVocB.find(x=>rph(n,x.k));
+  return c?c.o:w;
+}
 function rstopMic(){if(rMic){rMic._stop=true;if(rMic._flush)rMic._flush()}try{rMic&&rMic.stop()}catch(e){}rMic=null}
 /* حفظ نتيجة عنوان واحد (نحتفظ بالأفضل) وإرسال التقدّم الإجمالي للأستاذ */
 function rsave(s,l,items,title,score){
@@ -116,6 +135,7 @@ function recite(s,l){
     $('#rty').onclick=()=>{rstopMic();ta.value='';const ms=document.querySelector('.mst');if(ms)ms.innerHTML='';$('#fb').innerHTML='';ta.focus()};
     ['paste','drop','cut','copy','contextmenu'].forEach(ev=>ta.addEventListener(ev,e=>e.preventDefault()));
     ta.addEventListener('beforeinput',e=>{if(/^insertFrom(Paste|Drop|Yank)/.test(e.inputType||''))e.preventDefault()});   /* لصق عبر لوحة المفاتيح */
+    rsetVoc(items,k);
     initMic($('#mic'),ta,s.id==='fr'?'fr-FR':'ar-DZ');
     const end=pass=>{
       testActive=null;ta.disabled=true;$('#chk').hidden=true;$('#mic').hidden=true;const ms=document.querySelector('.mst');if(ms)ms.hidden=true;
@@ -176,7 +196,7 @@ function initMic(btn,ta,lang){
     r._flush=()=>{shw=tgt.slice();if(tm){clearInterval(tm);tm=null}paint()};
     r.onresult=e=>{
       let acc='';for(let i=0;i<e.results.length;i++)acc=rmerge(acc,e.results[i][0].transcript);
-      acc=rfixnum(acc);
+      acc=rfixnum(acc).split(/\s+/).filter(Boolean).map(rsnap).join(' ');
       tgt=acc.split(/\s+/).filter(Boolean);
       let k=0;while(k<shw.length&&k<tgt.length&&shw[k]===tgt[k])k++;   /* إن غيّر المتصفح كلمات مؤقتة نصحّح من أول اختلاف */
       if(k<shw.length){shw=shw.slice(0,k);paint()}
