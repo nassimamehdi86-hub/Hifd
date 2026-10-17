@@ -66,6 +66,8 @@ function recBtn(l){
   return `<div class="acts"><div class="btn rec" id="rc">🎙️ اختبار التسميع</div></div>${o?`<p class="hint">تقدّم التسميع: ${o.last}% · أفضل نتيجة: ${o.pct}%</p>`:''}`;
 }
 let rTimer=null,rMic=null;
+/* منع نسخ الإجابة النموذجية (تحديد، نسخ، قائمة الضغط المطوّل، سحب) حتى لا تُلصق في التسميع */
+function rnocopy(root){(root||document).querySelectorAll('.nocopy').forEach(e=>['copy','cut','contextmenu','selectstart','dragstart'].forEach(ev=>e.addEventListener(ev,x=>x.preventDefault())))}
 function rstopMic(){if(rMic){rMic._stop=true;if(rMic._flush)rMic._flush()}try{rMic&&rMic.stop()}catch(e){}rMic=null}
 /* حفظ نتيجة عنوان واحد (نحتفظ بالأفضل) وإرسال التقدّم الإجمالي للأستاذ */
 function rsave(s,l,items,title,score){
@@ -90,8 +92,9 @@ function recite(s,l){
     app.innerHTML=`<div class="rtop"><span>🎙️ التسميع</span><span>${done} / ${n}</span></div><div class="bar"><i style="width:${done/n*100}%"></i></div>
     <p class="hint">${done===n?'🏆 أحسنت! سمّعت كل العناوين — يمكنك إعادة أي عنوان':'اضغط على أي عنوان وابدأ التسميع من حفظك'}</p>
     <div class="acts"><div class="btn alt" id="sa">👁️ إظهار الحلول للمراجعة</div></div>
-    <div class="rlist2"${FD}>${items.map((it,k)=>{const v=P[it[0]];return `<div class="rt lv${Math.min(3,lv[k]||0)}" data-k="${k}"><span>${v>=100?'✅':v>0?'🟡':v===0?'❌':'⚪'}</span><b>${esc(it[0])}</b><button class="eye" type="button" data-e="${k}" aria-label="إظهار الحل">👁️</button></div><div class="mdl rsol"${FD} id="sol${k}" hidden>${esc(it[1])}</div>`}).join('')}</div>
+    <div class="rlist2"${FD}>${items.map((it,k)=>{const v=P[it[0]];return `<div class="rt lv${Math.min(3,lv[k]||0)}" data-k="${k}"><span>${v>=100?'✅':v>0?'🟡':v===0?'❌':'⚪'}</span><b>${esc(it[0])}</b><button class="eye" type="button" data-e="${k}" aria-label="إظهار الحل">👁️</button></div><div class="mdl rsol nocopy"${FD} id="sol${k}" hidden>${esc(it[1])}</div>`}).join('')}</div>
     <div class="acts"><div class="btn alt rst" id="rst">🔄 ابدأ من الأول</div></div>`;
+    rnocopy(app);
     app.querySelectorAll('.rt').forEach(e=>e.onclick=()=>one(+e.dataset.k));
     app.querySelectorAll('.eye').forEach(b=>b.onclick=e=>{e.stopPropagation();const d=$('#sol'+b.dataset.e);d.hidden=!d.hidden;b.textContent=d.hidden?'👁️':'🙈'});
     $('#sa').onclick=()=>{showAll=!showAll;app.querySelectorAll('.rsol').forEach(d=>d.hidden=!showAll);app.querySelectorAll('.eye').forEach(b=>b.textContent=showAll?'🙈':'👁️');$('#sa').textContent=showAll?'🙈 إخفاء الحلول':'👁️ إظهار الحلول للمراجعة'};
@@ -112,11 +115,13 @@ function recite(s,l){
     /* إعادة المحاولة بلا حدّ: تمسح الخانة وتبدأ من جديد دون أن تستهلك محاولة */
     $('#rty').onclick=()=>{rstopMic();ta.value='';const ms=document.querySelector('.mst');if(ms)ms.innerHTML='';$('#fb').innerHTML='';ta.focus()};
     ['paste','drop','cut','copy','contextmenu'].forEach(ev=>ta.addEventListener(ev,e=>e.preventDefault()));
+    ta.addEventListener('beforeinput',e=>{if(/^insertFrom(Paste|Drop|Yank)/.test(e.inputType||''))e.preventDefault()});   /* لصق عبر لوحة المفاتيح */
     initMic($('#mic'),ta,s.id==='fr'?'fr-FR':'ar-DZ');
     const end=pass=>{
       testActive=null;ta.disabled=true;$('#chk').hidden=true;$('#mic').hidden=true;const ms=document.querySelector('.mst');if(ms)ms.hidden=true;
-      $('#fb').innerHTML=`<div class="fb ${pass?'g':'b'}">${pass?pick(PRAISE)+' ⭐ — أصبت المعنى':'انتهت المحاولات'}</div><p class="hint">الإجابة النموذجية:</p><div class="mdl"${FD}>${esc(it[1])}</div>
+      $('#fb').innerHTML=`<div class="fb ${pass?'g':'b'}">${pass?pick(PRAISE)+' ⭐ — أصبت المعنى':'انتهت المحاولات'}</div><p class="hint">الإجابة النموذجية:</p><div class="mdl nocopy"${FD}>${esc(it[1])}</div>
       <div class="acts"><div class="btn alt" id="rt">🔁 أعد هذا العنوان</div>${k+1<n?'<div class="btn" id="nx2">العنوان التالي ◀</div>':''}</div>`;
+      rnocopy($('#fb'));
       $('#rt').onclick=()=>one(k);
       if($('#nx2'))$('#nx2').onclick=()=>one(k+1);
       scrollTo(0,document.body.scrollHeight);
