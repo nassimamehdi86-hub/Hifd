@@ -13,7 +13,7 @@ window.SUBJECTS=[
  {id:'civ',name:'التربية المدنية',color:'#4338ca',sections:three('c',M)},
  {id:'isl',name:'التربية الإسلامية',color:'#15803d',sections:[{name:'دروس السنة الرابعة متوسط',lessons:[L('i01','سورة النبأ'),L('i02','الإيمان باليوم الآخر'),L('i03','الحج: أحكامه وحُكمه'),L('i04','من آداب المسلم في أسرته (1)'),L('i05','فتح مكة'),L('i06','مواقف وعبر من حياة أولي العزم'),L('i07','من آداب المسلم في أسرته (2)'),L('i08','مقوّمات الدين الإسلامي'),L('i09','الإيمان بالقضاء والقدر'),L('i10','العمرة: أحكامها وحُكمها'),L('i11','صلة الرحم'),L('i12','حجّة الوداع'),L('i13','وفاة النبي ﷺ'),L('i14','عقوق الوالدين'),L('i15','حسن الجوار'),L('i16','عبر ودروس من سيرة الخلفاء الراشدين')]}]},
  {id:'sci',name:'العلوم',color:'#be123c',sections:[
-  {name:'المقطع 1 · الدرس 1: تحوّلات الأغذية خلال الهضم',lessons:[L('s10','الكواشف اللونية'),L('s10-2','مكونات الجهاز الهضمي'),L('s10-3','العناصر الغذائية')]},
+  {name:'المقطع 1 · الدرس 1: تحوّلات الأغذية خلال الهضم',lessons:[L('s10','الكواشف اللونية'),L('s10-2','مكونات الجهاز الهضمي'),L('s10-3','العناصر الغذائية'),L('s10-4','تحوّلات الأغذية'),L('s10-5','الإنزيمات وخصائصها'),L('s10-6','الهضم والمغذيات')]},
   {name:'المقطع 1: التغذية عند الإنسان',lessons:[L('s12','امتصاص المغذيات'),L('s13','نقل المغذيات في العضوية'),L('s14','استعمال المغذيات'),L('s15','التوازن الغذائي')]},
   {name:'المقطع 2: التنسيق الوظيفي في العضوية',lessons:[L('s21','الارتباط التشريحي للاتصال العصبي'),L('s22','الحركة الإرادية والفعل المنعكس'),L('s23','اختلال الاتصال العصبي'),L('s24','الاستجابة المناعية'),L('s25','الاختلالات المناعية')]},
   {name:'المقطع 3: انتقال الصفات الوراثية',lessons:[L('s31','من تشكّل الأمشاج إلى الإلقاح'),L('s32','الآلية العامة لانتقال الصفات الوراثية'),L('s33','الاختلالات الوراثية')]}]},
@@ -249,6 +249,135 @@ s103.rec=[
  ['العناصر الغذائية المعقدة','العناصر الغذائية المعقدة هي الكبيرة: النشاء، البروتين، الدسم (الليبيد)، الألياف.',['المعقده','الكبيره','النشاء','البروتين','الدسم','الليبيد','الالياف']],
  ['أمثلة الأغذية','الخبز، البيض، اللحم، الحليب، وتحتوي على عناصر غذائية كالنشاء والبروتين.',['الخبز','البيض','اللحم','الحليب','النشاء','البروتين']],
  ['بنية البروتين والنشاء والسيليلوز','البروتين سلسلة من الأحماض الأمينية، والنشاء سلسلة طويلة متفرعة، وألياف السيليلوز سلسلة طويلة غير متفرعة.',['البروتين','سلسله','احماض','امينيه','النشاء','متفرعه','السيليلوز','غير']]
+];
+
+/* العلوم ← المقطع 1 ← الدرس 1 ← الدرس الفرعي 4: تحوّلات الأغذية */
+const s104=SUBJECTS.find(s=>s.id==='sci').sections[0].lessons[3];
+s104.qs=[
+ ['ما عنوان الدرس؟','تحوّلات الأغذية','الكواشف اللونية','مكونات الجهاز الهضمي','العناصر الغذائية'],
+ ['في كم مستوى تطرأ التحولات على الأغذية المتناولة؟','ثلاثة مستويات: الفم والمعدة والمعي الدقيق','مستويان: الفم والمعدة','أربعة مستويات: الفم والمعدة والمعي الدقيق والمعي الغليظ','مستوى واحد: المعدة'],
+ ['ما نوعا الهضم على مستوى الفم؟','هضم آلي وهضم كيميائي','هضم آلي فقط','هضم كيميائي فقط','هضم عصبي وهضم آلي'],
+ ['كيف يتم الهضم الآلي في الفم؟','يقطع الغذاء بالأسنان ويقلب باللسان ويبلل باللعاب','يتحول الغذاء إلى عصيدة بتقلص عضلات الفم','يتفكك النشاء بفضل الأميلاز اللعابي','يقطع الغذاء بالأسنان ويبلل بالعصارة المعدية'],
+ ['ما دور الأسنان في الفم؟','تقطيع الغذاء','تقليب الغذاء','تبليل الغذاء','تفكيك النشاء'],
+ ['ما دور اللسان في الفم؟','تقليب الغذاء','تقطيع الغذاء','تبليل الغذاء','تفكيك النشاء'],
+ ['بماذا يبلل الغذاء في الفم؟','باللعاب','بالعصارة المعدية','بالعصارة الصفراوية','بالعصارة المعوية'],
+ ['ماذا يحدث للنشاء في الهضم الكيميائي على مستوى الفم؟','يتفكك من سكر معقد إلى سكر بسيط ثنائي يدعى مالتوز','يتفكك من سكر معقد إلى سكر بسيط أحادي','يتفكك إلى متعدد ببتيد','يتحول إلى مستحلبات'],
+ ['ما اسم السكر البسيط الثنائي الناتج عن تفكك النشاء في الفم؟','المالتوز (سكر الشعير)','الكيموس','الكيلوس','متعدد الببتيد'],
+ ['ما الاسم الآخر للمالتوز؟','سكر الشعير','سكر العنب','سكر القصب','سكر الحليب'],
+ ['أي إنزيم يفكك النشاء في الفم؟','إنزيم الأميلاز اللعابي','إنزيم البروتياز','إنزيم الليباز','إنزيم المالتاز المعدي'],
+ ['أين يوجد إنزيم الأميلاز اللعابي؟','في اللعاب','في العصارة المعدية','في العصارة الصفراوية','في العصارة المعوية'],
+ ['من أي غدد يفرز اللعاب؟','الغدد اللعابية في الفم','الغدد المجهرية في جدار المعدة','غدة الكبد','الغدة البنكرياسية'],
+ ['ما دور إنزيم الأميلاز اللعابي؟','تفكيك النشاء إلى مالتوز','تفكيك البروتين إلى متعدد ببتيد','تحويل الدسم إلى مستحلبات','تحويل الغذاء إلى عصيدة'],
+ ['كيف يتم الهضم الآلي على مستوى المعدة؟','يتحول الغذاء إلى عصيدة بتقلص وتمدد عضلات المعدة','يقطع الغذاء بالأسنان','يتفكك البروتين بإنزيم البروتياز','ينتج سائل مغذي بتقلص عضلات المعي'],
+ ['ماذا نسمي العصيدة الناتجة عن الهضم الآلي في المعدة؟','الكيموس','الكيلوس','المالتوز','المستحلبات'],
+ ['ما الذي يحول الغذاء إلى كيموس؟','تقلص وتمدد عضلات المعدة','العصارة الصفراوية','إنزيم الأميلاز اللعابي','تقلص وتمدد عضلات المعي الدقيق'],
+ ['ماذا يحدث للبروتين في الهضم الكيميائي على مستوى المعدة؟','يتفكك إلى متعدد ببتيد','يتفكك إلى مالتوز','يتحول إلى مستحلبات','يتحول إلى كيلوس'],
+ ['أي إنزيم يفكك البروتين في المعدة؟','إنزيم البروتياز','إنزيم الأميلاز اللعابي','إنزيم الأميلاز البنكرياسي','إنزيم الليباز'],
+ ['أين يوجد إنزيم البروتياز في المعدة؟','في العصارة المعدية الحامضية','في اللعاب','في العصارة الصفراوية','في العصارة المعوية'],
+ ['ما طبيعة العصارة المعدية؟','حامضية','قاعدية','معتدلة','لا تحتوي على إنزيمات'],
+ ['ما الذي يفرز العصارة المعدية؟','غدد مجهرية على الجدار الداخلي للمعدة','الغدد اللعابية','غدة الكبد','الغدة المعوية'],
+ ['أين توجد الغدد المجهرية التي تفرز العصارة المعدية؟','على الجدار الداخلي للمعدة','في الفم','على جدار المعي الدقيق','في الكبد'],
+ ['ما اسم الناتج عن تفكك البروتين في المعدة؟','متعدد الببتيد','المالتوز','الكيلوس','المستحلبات'],
+ ['بماذا ينتج سائل مغذي يدعى الكيلوس في المعي الدقيق؟','بتقلص وتمدد عضلات المعي الدقيق','بتقلص وتمدد عضلات المعدة','بالعصارة الصفراوية','بإنزيم الأميلاز اللعابي'],
+ ['ماذا نسمي السائل المغذي الناتج عن الهضم الآلي في المعي الدقيق؟','الكيلوس','الكيموس','المالتوز','المستحلبات'],
+ ['ما الفرق بين الكيموس والكيلوس؟','الكيموس عصيدة في المعدة والكيلوس سائل مغذي في المعي الدقيق','الكيموس سائل مغذي في المعي الدقيق والكيلوس عصيدة في المعدة','كلاهما ينتج في الفم','كلاهما ينتج في المعدة'],
+ ['كم عصارة تصب في المعي الدقيق؟','ثلاث عصارات','عصارتان','أربع عصارات','عصارة واحدة'],
+ ['ما العصارات التي تصب في المعي الدقيق؟','بنكرياسية ومعوية وصفراوية','لعابية ومعدية ومعوية','معدية وبنكرياسية وصفراوية','لعابية وبنكرياسية وصفراوية'],
+ ['ما دور العصارات التي تصب في المعي الدقيق؟','تفكيك العناصر الغذائية التي لم تتفكك','تحويل الغذاء إلى عصيدة','تقطيع الغذاء وتبليله','تفكيك النشاء فقط'],
+ ['أي مجموعة تمثل العناصر الغذائية التي لم تتفكك قبل المعي الدقيق؟','نشاء ومالتوز وبروتين متبقي','نشاء وكيموس وكيلوس','مالتوز ومستحلبات وكيلوس','بروتين وماء وأملاح'],
+ ['أي غدة تفرز العصارة المعوية؟','الغدة المعوية','الغدة البنكرياسية','غدة الكبد','الغدد اللعابية'],
+ ['ماذا تحتوي العصارة المعوية؟','عدة إنزيمات','لا تحتوي على إنزيمات','الصفراء فقط','اللعاب فقط'],
+ ['أي غدة تفرز العصارة البنكرياسية؟','الغدة البنكرياسية (المعثكلة)','غدة الكبد','الغدة المعوية','الغدد اللعابية'],
+ ['ماذا تحتوي العصارة البنكرياسية؟','عدة إنزيمات','لا تحتوي على إنزيمات','الصفراء فقط','إنزيم الأميلاز اللعابي فقط'],
+ ['ما الاسم الآخر للغدة البنكرياسية؟','المعثكلة','الكبد','المرارة','الغدة الدرقية'],
+ ['أي غدة تفرز العصارة الصفراوية؟','غدة الكبد','الغدة البنكرياسية','الغدة المعوية','الغدد اللعابية'],
+ ['أين تخزن العصارة الصفراوية؟','داخل كيس صفراوي','في المعدة','في الغدة البنكرياسية','في الفم'],
+ ['هل تحتوي العصارة الصفراوية على إنزيمات؟','لا، لا تحتوي على إنزيمات','نعم، تحتوي على عدة إنزيمات','نعم، تحتوي على إنزيم الأميلاز','نعم، تحتوي على إنزيم البروتياز'],
+ ['ما دور العصارة الصفراوية؟','تحويل الدسم إلى مستحلبات','تفكيك النشاء إلى مالتوز','تفكيك البروتين إلى متعدد ببتيد','تحويل الغذاء إلى عصيدة'],
+ ['ماذا نسمي القطيرات الدقيقة الناتجة عن تأثير العصارة الصفراوية في الدسم؟','مستحلبات','كيموس','كيلوس','متعدد ببتيد'],
+ ['أي عصارة لا تحتوي على إنزيمات؟','العصارة الصفراوية','العصارة المعوية','العصارة البنكرياسية','العصارة المعدية']
+];
+s104.rec=[
+ ['مستويات التحولات','تطرأ على الأغذية المتناولة مجموعة من التحولات المختلفة وفي عدة مستويات: الفم، المعدة، المعي الدقيق.',['تطرا','الاغذيه','المتناوله','تحولات','مستويات','الفم','المعده','المعي','الدقيق']],
+ ['الهضم الآلي في الفم','يقطع الغذاء بالأسنان، ويقلب باللسان، ويبلل باللعاب.',['يقطع','الغذاء','بالاسنان','يقلب','باللسان','يبلل','باللعاب']],
+ ['الهضم الكيميائي في الفم','يتفكك النشاء من سكر معقد إلى سكر بسيط ثنائي يدعى مالتوز (سكر الشعير)، بفضل إنزيم الأميلاز اللعابي الموجود في اللعاب الذي تفرزه الغدد اللعابية في الفم.',['يتفكك','النشاء','سكر','معقد','بسيط','ثنايي','مالتوز','الشعير','انزيم','الاميلاز','اللعابي','اللعاب','تفرزه','الغدد','اللعابيه','الفم']],
+ ['الهضم الآلي في المعدة','يتحول الغذاء إلى عصيدة تدعى الكيموس، وذلك بواسطة تقلص وتمدد عضلات المعدة.',['يتحول','الغذاء','عصيده','تدعي','الكيموس','بواسطه','تقلص','تمدد','عضلات','المعده']],
+ ['الهضم الكيميائي في المعدة','يتفكك البروتين إلى متعدد ببتيد بواسطة إنزيم بروتياز الموجود في العصارة المعدية الحامضية التي تفرزها غدد مجهرية متواجدة على الجدار الداخلي للمعدة.',['يتفكك','البروتين','متعدد','ببتيد','انزيم','بروتياز','العصاره','المعديه','حامضيه','تفرزها','غدد','مجهريه','الجدار','الداخلي','للمعده']],
+ ['الهضم الآلي في المعي الدقيق','يتم بفضل تقلص وتمدد عضلات المعي الدقيق، حيث ينتج سائل مغذي يدعى الكيلوس.',['بفضل','تقلص','تمدد','عضلات','المعي','الدقيق','سايل','مغذي','يدعي','الكيلوس']],
+ ['الهضم الكيميائي في المعي الدقيق','تصب في المعي الدقيق 3 عصارات (عصارة بنكرياسية، معوية، وصفراوية)، حيث تساهم جميعها في تفكيك العناصر الغذائية التي لم تتفكك، وهي: النشاء، المالتوز، البروتين المتبقي.',['تصب','المعي','الدقيق','عصارات','بنكرياسيه','معويه','صفراويه','تساهم','تفكيك','العناصر','الغذاييه','لم','تتفكك','النشاء','المالتوز','البروتين','المتبقي']],
+ ['الغدة المعوية','تفرز عصارة معوية تحتوي على عدة إنزيمات.',['غده','معويه','تفرز','عصاره','تحتوي','عده','انزيمات']],
+ ['الغدة البنكرياسية (المعثكلة)','تفرز عصارة بنكرياسية تحتوي على عدة إنزيمات.',['غده','بنكرياسيه','المعثكله','تفرز','عصاره','تحتوي','عده','انزيمات']],
+ ['غدة الكبد','تفرز العصارة الصفراوية التي تخزن داخل كيس صفراوي ولا تحتوي على إنزيمات، فهي تعمل على تحويل الدسم إلى مستحلبات (قطيرات دقيقة من الدسم).',['غده','الكبد','تفرز','العصاره','الصفراويه','تخزن','كيس','صفراوي','لا','تحتوي','انزيمات','تحويل','الدسم','مستحلبات','قطيرات','دقيقه']]
+];
+
+/* العلوم ← المقطع 1 ← الدرس 1 ← الدرس الفرعي 5: الإنزيمات */
+const s105=SUBJECTS.find(s=>s.id==='sci').sections[0].lessons[4];
+s105.qs=[
+ ['ما عنوان الدرس؟','الإنزيمات','تحوّلات الأغذية','الكواشف اللونية','العناصر الغذائية'],
+ ['ما هو الإنزيم؟','مادة كيميائية من طبيعة بروتينية','مادة كيميائية من طبيعة دسمة','مادة غذائية من طبيعة سكرية','غدة تفرز العصارات الهاضمة'],
+ ['ما طبيعة الإنزيمات؟','بروتينية','سكرية','دسمة','معدنية'],
+ ['أين تنتج العضوية الإنزيمات؟','على مستوى الغدد الهاضمة','على مستوى الأسنان فقط','على مستوى المعي الغليظ','على مستوى اللسان'],
+ ['من ينتج الإنزيمات؟','العضوية على مستوى الغدد الهاضمة','الأغذية المتناولة','الكواشف اللونية','الأسنان واللسان'],
+ ['ما دور الإنزيمات؟','تفكيك الأغذية كيميائيًا من معقدة إلى بسيطة','تقطيع الأغذية بالأسنان','تفكيك الأغذية كيميائيًا من بسيطة إلى معقدة','تحويل الغذاء إلى عصيدة'],
+ ['كيف يكون تفكيك الإنزيمات للأغذية؟','من معقدة إلى بسيطة','من بسيطة إلى معقدة','من سائلة إلى صلبة','من حامضية إلى قاعدية'],
+ ['بماذا تتميز الإنزيمات؟','بالنوعية','بالتنوع','بالحموضة','بالتعميم'],
+ ['ماذا تعني نوعية الإنزيم؟','لكل إنزيم غذاء خاص يفككه','الإنزيم الواحد يفكك كل الأغذية','لكل غذاء عدة إنزيمات تفككه معًا','الإنزيم يفكك الغذاء في أي وسط'],
+ ['ما الاستنتاج المتعلق بالإنزيمات في الدرس؟','تتميز الإنزيمات بالنوعية','تتميز الإنزيمات بالتعميم','تتميز الإنزيمات بالحموضة','تتميز الإنزيمات بالقاعدية'],
+ ['ما درجة الحرارة المثلى لعمل الإنزيم؟','37 درجة مئوية','27 درجة مئوية','47 درجة مئوية','100 درجة مئوية'],
+ ['ماذا يحدث للإنزيم عند ارتفاع درجة الحرارة أو انخفاضها عن 37 درجة؟','يفقد فعاليته','يزداد نشاطه','يتضاعف نشاطه','لا يتأثر'],
+ ['على ماذا يعتمد نشاط الإنزيم أيضًا؟','درجة الحموضة','لون الغذاء','حجم الغدة','كمية اللعاب فقط'],
+ ['ما طبيعة الوسط الذي يعمل فيه إنزيم الأميلاز اللعابي (الفم)؟','وسط معتدل','وسط حمضي','وسط قاعدي','وسط شديد الحموضة'],
+ ['ما طبيعة الوسط في المعدة؟','حمضي','معتدل','قاعدي','متعادل'],
+ ['ما طبيعة الوسط في المعي الدقيق؟','قاعدي','حمضي','معتدل','شديد الحموضة'],
+ ['أي ترتيب صحيح للأوساط (الفم، المعدة، المعي الدقيق)؟','معتدل، حمضي، قاعدي','حمضي، معتدل، قاعدي','قاعدي، حمضي، معتدل','معتدل، قاعدي، حمضي'],
+ ['لماذا يتوقف تفكيك النشاء في المعدة؟','لأن حموضة العصارة المعدية العالية تُفقد الأميلاز اللعابي فعاليته','لأن درجة الحرارة في المعدة منخفضة جدًا','لأن المعدة قاعدية','لأن النشاء يتحول إلى بروتين'],
+ ['أي إنزيم يفقد فعاليته في المعدة بسبب الحموضة العالية؟','إنزيم الأميلاز اللعابي','إنزيم البروتياز','إنزيم الليباز','كل الإنزيمات'],
+ ['ما سبب توقف تفكيك النشاء في المعدة؟','الحموضة العالية للعصارة المعدية','الحرارة العالية للمعدة','غياب الغدد المجهرية','نقص الماء في المعدة']
+];
+s105.rec=[
+ ['تعريف الإنزيم','مادة كيميائية من طبيعة بروتينية، تنتجها العضوية على مستوى الغدد الهاضمة، تعمل على تفكيك الأغذية كيميائيًا من معقدة إلى بسيطة.',['ماده','كيميايه','طبيعه','بروتينيه','تنتجها','العضويه','الغدد','الهاضمه','تفكيك','الاغذيه','معقده','بسيطه']],
+ ['الاستنتاج','تتميز الإنزيمات بالنوعية، حيث لكل إنزيم غذاء خاص يفككه.',['تتميز','الانزيمات','النوعيه','لكل','انزيم','غذاء','خاص','يفككه']],
+ ['درجة الحرارة','تعتبر درجة حرارة 37 درجة مئوية مثلى لعمل الإنزيم، حيث يفقد فعاليته بارتفاعها أو انخفاضها.',['درجه','حراره','37','مئويه','مثلي','لعمل','الانزيم','يفقد','فعاليته','بارتفاعها','انخفاضها']],
+ ['درجة الحموضة','يعتمد نشاط الإنزيم أيضًا على درجة الحموضة: الفم وسط معتدل، المعدة حمضي، المعي الدقيق قاعدي.',['يعتمد','نشاط','الانزيم','درجه','الحموضه','وسط','معتدل','المعده','حمضي','الدقيق','قاعدي']],
+ ['توقف تفكيك النشاء في المعدة','يتوقف تفكيك النشاء في المعدة لأن الحموضة العالية للعصارة المعدية تُفقد إنزيم الأميلاز اللعابي فعاليته.',['يتوقف','تفكيك','النشاء','المعده','الحموضه','العاليه','للعصاره','المعديه','تفقد','انزيم','الاميلاز','اللعابي','فعاليته']]
+];
+
+/* العلوم ← المقطع 1 ← الدرس 1 ← الدرس الفرعي 6: الهضم والمغذيات */
+const s106=SUBJECTS.find(s=>s.id==='sci').sections[0].lessons[5];
+s106.qs=[
+ ['ما عنوان الدرس؟','الهضم والمغذيات','الإنزيمات وخصائصها','تحوّلات الأغذية','الكواشف اللونية'],
+ ['ما المغذيات؟','عناصر غذائية بسيطة (مفككة) قابلة للامتصاص','عناصر غذائية معقدة قابلة للامتصاص','عناصر غذائية بسيطة غير قابلة للامتصاص','عناصر غذائية معقدة تحتوي على روابط'],
+ ['عن ماذا تنتج المغذيات؟','عن الهضم الآلي والكيميائي للأغذية المعقدة','عن الهضم الآلي فقط للأغذية البسيطة','عن الهضم الكيميائي فقط للأغذية البسيطة','عن امتصاص الأغذية المعقدة'],
+ ['ما الهضم؟','مجموع التحولات الآلية والكيميائية التي تطرأ على الأغذية داخل الأنبوب الهضمي','مجموع التحولات الآلية فقط داخل الفم','مجموع التحولات الكيميائية داخل الغدد الهاضمة','انتقال المغذيات من الأنبوب الهضمي إلى الدم'],
+ ['أين تطرأ التحولات الآلية والكيميائية للأغذية في الهضم؟','داخل الأنبوب الهضمي','داخل الغدد الهاضمة فقط','داخل الدم','داخل الكبد فقط'],
+ ['ماذا يحدث للأغذية في الهضم؟','تتحول من جزيئات معقدة إلى بسيطة سهلة الامتصاص','تتحول من جزيئات بسيطة إلى معقدة','تتحول من جزيئات معقدة إلى أكثر تعقيدًا','تتجمع في الأنبوب الهضمي دون تغيير'],
+ ['لمن تكون الجزيئات البسيطة سهلة الامتصاص؟','للجسم','للأنبوب الهضمي فقط','للغدد اللعابية','للأسنان'],
+ ['أي مجموعة تضم عناصر غذائية لا تُهضم؟','الماء والأملاح المعدنية والفيتامينات','النشاء والبروتين والدسم','الماء والنشاء والبروتين','الفيتامينات والدسم والألياف'],
+ ['لماذا لا يتم تفكيك الماء والأملاح المعدنية والفيتامينات؟','لأنها أغذية بسيطة مفككة لا تحتوي على روابط','لأنها أغذية معقدة لا تحتوي على إنزيمات','لأنها تفتقر إلى الإنزيمات الخاصة بها','لأنها أغذية معقدة تحتوي على روابط'],
+ ['ما طبيعة الألياف (السيلولوز)؟','سكريات معقدة','سكريات بسيطة','أحماض أمينية','دسم'],
+ ['لماذا لا تُهضم الألياف (السيلولوز)؟','لانعدام إنزيم خاص بتفكيكه','لأنها أغذية بسيطة مفككة','لأنها تحتوي على روابط بسيطة','لأن العصارة الصفراوية تعطل تفكيكه'],
+ ['ما دور الألياف (السيلولوز)؟','تسهيل عملية الإطراح','تسهيل عملية الامتصاص','تسهيل عملية الاستحلاب','تسهيل عمل الإنزيمات'],
+ ['ماذا يتشكل في نهاية الهضم على مستوى المعي الدقيق؟','خليط سائل من ألياف السيلولوز ومجموعة من المغذيات','عصيدة تدعى الكيموس فقط','عصارة صفراوية ومستحلبات فقط','خليط صلب من النشاء والبروتين'],
+ ['أين يتشكل خليط ناتج الهضم في نهاية الهضم؟','على مستوى المعي الدقيق','على مستوى المعدة','على مستوى الفم','على مستوى الكبد'],
+ ['أي مجموعة تمثل المغذيات الناتجة عن الهضم؟','ماء، أملاح معدنية، فيتامينات، غلوكوز، أحماض أمينية، أحماض دسمة وغليسيرول','نشاء، بروتين، دسم، ألياف','ماء، نشاء، مالتوز، متعدد ببتيد','غلوكوز، مالتوز، كيموس، كيلوس'],
+ ['ما المغذي الناتج عن تفكيك النشاء في الدرس؟','الغلوكوز','الأحماض الأمينية','الأحماض الدسمة','الغليسيرول'],
+ ['ما المغذيات الناتجة عن تفكيك البروتين؟','الأحماض الأمينية','الغلوكوز','الأحماض الدسمة والغليسيرول','الفيتامينات'],
+ ['ما المغذيات الناتجة عن تفكيك الدسم؟','الأحماض الدسمة والغليسيرول','الغلوكوز','الأحماض الأمينية','الماء والأملاح المعدنية'],
+ ['أي هضم يسبق الآخر؟','الهضم الآلي يسبق الهضم الكيميائي','الهضم الكيميائي يسبق الهضم الآلي','يحدثان في آن واحد دائمًا','لا ترتيب بينهما'],
+ ['لماذا يسبق الهضم الآلي الهضم الكيميائي؟','لتسهيل تأثير الإنزيمات في تفكيك الأغذية','لتسهيل امتصاص الأغذية','لتسهيل إطراح الألياف','لتعطيل تأثير الإنزيمات'],
+ ['ما دور العصارة الصفراوية في الدرس؟','تستحلب الدسم من أجل تسهيل تفكيكه','تفكك الدسم مباشرة بإنزيماتها','تفكك النشاء إلى مالتوز','تفكك البروتين إلى متعدد ببتيد'],
+ ['أي إنزيم يفكك الدسم بعد استحلابه؟','الليباز','الأميلاز','البروتياز','المالتاز'],
+ ['ما سبب استحلاب العصارة الصفراوية للدسم؟','لتسهيل تفكيكه بواسطة الليباز','لتسهيل امتصاصه في الفم','لتحويله إلى كيموس','لتسهيل إطراحه مع الألياف']
+];
+s106.rec=[
+ ['تعريف المغذيات','عناصر غذائية بسيطة (مفككة) قابلة للامتصاص، نتجت عن الهضم الآلي والكيميائي للأغذية المعقدة.',['عناصر','غذاييه','بسيطه','مفككه','قابله','للامتصاص','نتجت','الهضم','الالي','الكيميايي','للاغذيه','المعقده']],
+ ['تعريف الهضم','مجموع التحولات الآلية والكيميائية التي تطرأ على الأغذية داخل الأنبوب الهضمي فتحولها من جزيئات معقدة إلى بسيطة سهلة الامتصاص من طرف الجسم.',['مجموع','تحولات','الاليه','الكيميايه','تطرا','الاغذيه','الانبوب','الهضمي','جزييات','معقده','بسيطه','سهله','الامتصاص','طرف','الجسم']],
+ ['أغذية لا تُهضم','لا يتم تفكيك كل من الماء والأملاح المعدنية والفيتامينات، لأنها أغذية بسيطة مفككة لا تحتوي على روابط.',['لا','تفكيك','الماء','الاملاح','المعدنيه','الفيتامينات','اغذيه','بسيطه','مفككه','روابط']],
+ ['الألياف (السيلولوز)','سكريات معقدة لا تُهضم لانعدام إنزيم خاص بتفكيكه، يتمثل دورها في تسهيل عملية الإطراح.',['الالياف','السيلولوز','سكريات','معقده','تهضم','لانعدام','انزيم','خاص','بتفكيكه','تسهيل','الاطراح']],
+ ['ناتج الهضم','في نهاية الهضم يتشكل على مستوى المعي الدقيق خليط سائل يتكون من ألياف السيلولوز ومجموعة من المغذيات.',['نهايه','الهضم','يتشكل','المعي','الدقيق','خليط','سايل','يتكون','الياف','سيلولوز','مجموعه','المغذيات']],
+ ['أمثلة المغذيات','ماء، أملاح معدنية، فيتامينات، غلوكوز، أحماض أمينية، أحماض دسمة وغليسيرول.',['ماء','املاح','معدنيه','فيتامينات','غلوكوز','احماض','امينيه','دسمه','غليسيرول']],
+ ['الآليات المساعدة','يسبق الهضم الآلي الهضم الكيميائي وذلك لتسهيل تأثير الإنزيمات في تفكيك الأغذية.',['يسبق','الهضم','الالي','الكيميايي','لتسهيل','تاثير','الانزيمات','تفكيك','الاغذيه']],
+ ['استحلاب الدسم','تستحلب العصارة الصفراوية الدسم من أجل تسهيل تفكيكه بواسطة الليباز.',['تستحلب','العصاره','الصفراويه','الدسم','اجل','تسهيل','تفكيكه','بواسطه','الليباز']]
 ];
 
 /* التاريخ ← المقطع 1 ← الدرس 1: دراسة الوثيقة التاريخية */
@@ -774,7 +903,8 @@ SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(l.id==='h11')
    (المصدر: ملخص Prof SOUALHIA Antar — « Ce que l'élève de 4°AM doit savoir ») */
 SUBJECTS.push({id:'fr',name:'اللغة الفرنسية',color:'#E8453C',sections:[
  {name:'Le texte argumentatif',lessons:[L('f11','La structure argumentative')]},
- {name:'Vocabulaire',lessons:[L('f12',"Les verbes d'opinion")]}]});
+ {name:'Vocabulaire',lessons:[L('f12',"Les verbes d'opinion")]},
+ {name:'Grammaire',lessons:[L('f13','La subordonnée relative / complétive')]}]});
 const f11=SUBJECTS.find(s=>s.id==='fr').sections[0].lessons[0];
 f11.v=['zsZ7Rs5a9ZU'];
 f11.qs=[
@@ -786,23 +916,23 @@ f11.qs=[
  ["Comment appelle-t-on l'idée ou l'opinion que l'auteur défend ?","La thèse","Le thème","L'argument","L'exemple"],
  ["Combien de parties comporte la structure argumentative ?","Trois parties : introduction, développement, conclusion","Deux parties : introduction et conclusion","Trois parties : thème, thèse, synthèse","Quatre parties : introduction, arguments, exemples, conclusion"],
  ["Quel est l'ordre des parties de la structure argumentative ?","Introduction → Développement → Conclusion","Développement → Introduction → Conclusion","Introduction → Conclusion → Développement","Conclusion → Développement → Introduction"],
- ["Quelle est la première partie de la structure argumentative ?","L'introduction (مقدمة)","Le développement (عرض)","La conclusion (خاتمة)","La synthèse (خلاصة)"],
+ ["Quelle est la première partie de la structure argumentative ?","L'introduction","Le développement","La conclusion","La synthèse"],
  ["Que contient l'introduction ?","Le thème et la thèse","Les arguments et les exemples","La synthèse et la reformulation de la thèse","Les connecteurs d'énumération et les exemples"],
- ["Que signifie le thème ?","Le sujet du texte (موضوع النص)","L'opinion de l'auteur","Les arguments de l'auteur","La reformulation de la thèse"],
+ ["Que signifie le thème ?","Le sujet du texte","L'opinion de l'auteur","Les arguments de l'auteur","La reformulation de la thèse"],
  ["Quel mot désigne le sujet du texte ?","Le thème","La thèse","La synthèse","L'argumentaire"],
- ["Que signifie la thèse ?","L'opinion, le point de vue de l'auteur (رأي الكاتب ووجهة نظره)","Le sujet du texte","L'exemple qui illustre un argument","Le résumé du texte"],
+ ["Que signifie la thèse ?","L'opinion, le point de vue de l'auteur","Le sujet du texte","L'exemple qui illustre un argument","Le résumé du texte"],
  ["Quel groupe de mots contient des synonymes de « thèse » ?","Point de vue – opinion – avis – prise de position","Sujet – thème – idée – exemple","Argument – preuve – exemple – conclusion","Synthèse – reformulation – confirmation – résumé"],
- ["Quelle est la deuxième partie de la structure argumentative ?","Le développement (عرض)","L'introduction (مقدمة)","La conclusion (خاتمة)","La thèse"],
+ ["Quelle est la deuxième partie de la structure argumentative ?","Le développement","L'introduction","La conclusion","La thèse"],
  ["Dans quelle partie trouve-t-on les arguments et les exemples ?","Dans le développement","Dans l'introduction","Dans la conclusion","Dans l'introduction et la conclusion"],
  ["Comment appelle-t-on le contenu du développement ?","L'argumentaire","La synthèse","Le thème","La thèse"],
  ["De quoi est composé l'argumentaire ?","Des arguments et des exemples","Du thème et de la thèse","De la thèse et de la synthèse","Des exemples et des connecteurs seulement"],
- ["Que sont les arguments (حجج وبراهين) ?","Les raisons et les preuves utilisées pour défendre la thèse","Le sujet traité dans le texte","La reformulation de la thèse","Les exemples placés dans la conclusion"],
- ["Quel est le rôle des exemples ?","Soutenir (appuyer) les arguments (لتدعيم الحجج)","Annoncer le thème du texte","Reformuler la thèse","Terminer le texte"],
- ["Quel est le rôle des connecteurs d'énumération ?","Ordonner (organiser) les idées (لترتيب الأفكار)","Reformuler la thèse","Présenter le sujet du texte","Confirmer l'opinion de l'auteur"],
- ["Quelle est la troisième partie de la structure argumentative ?","La conclusion (خاتمة)","L'introduction (مقدمة)","Le développement (عرض)","L'argumentaire"],
+ ["Que sont les arguments ?","Les raisons et les preuves utilisées pour défendre la thèse","Le sujet traité dans le texte","La reformulation de la thèse","Les exemples placés dans la conclusion"],
+ ["Quel est le rôle des exemples ?","Soutenir (appuyer) les arguments","Annoncer le thème du texte","Reformuler la thèse","Terminer le texte"],
+ ["Quel est le rôle des connecteurs d'énumération ?","Ordonner (organiser) les idées","Reformuler la thèse","Présenter le sujet du texte","Confirmer l'opinion de l'auteur"],
+ ["Quelle est la troisième partie de la structure argumentative ?","La conclusion","L'introduction","Le développement","L'argumentaire"],
  ["Que contient la conclusion ?","La synthèse","Le thème","Les arguments","Les exemples"],
- ["En quoi consiste la synthèse (خلاصة) ?","Reformulation ou confirmation de la thèse","Annonce du thème du texte","Liste des exemples du développement","Ajout de nouveaux arguments"],
- ["Que signifie « reformuler la thèse » ?","Redire la même idée avec d'autres mots (إعادة صياغة الفكرة)","Changer d'opinion","Ajouter un nouvel exemple","Annoncer le sujet"],
+ ["En quoi consiste la synthèse ?","Reformulation ou confirmation de la thèse","Annonce du thème du texte","Liste des exemples du développement","Ajout de nouveaux arguments"],
+ ["Que signifie « reformuler la thèse » ?","Redire la même idée avec d'autres mots","Changer d'opinion","Ajouter un nouvel exemple","Annoncer le sujet"],
  ["Dans quelle partie présente-t-on le thème et la thèse ?","Dans l'introduction","Dans le développement","Dans la conclusion","Dans l'argumentaire"],
  ["Quel schéma résume correctement la structure argumentative ?","Introduction (thème + thèse) → Développement (arguments + exemples) → Conclusion (synthèse)","Introduction (arguments + exemples) → Développement (thème + thèse) → Conclusion (synthèse)","Introduction (synthèse) → Développement (thème + thèse) → Conclusion (arguments + exemples)","Introduction (thème + exemples) → Développement (thèse + synthèse) → Conclusion (arguments)"]
 ];
@@ -929,9 +1059,370 @@ f12.acts=[
 ];
 
 /* صفحات الدرس كصور: pdf/f11-1.jpg و pdf/f12-1.jpg (درس فقط؛ الأنشطة في نافذتها الخاصة) */
+/* اللغة الفرنسية ← Grammaire ← الدرس: La subordonnée relative / La subordonnée complétive */
+const f13=SUBJECTS.find(s=>s.id==='fr').sections[2].lessons[0];
+f13.v=['Zpo3BFk9NPw'];
+f13.qs=[
+ [
+  "« الجملة التابعة الموصولة » se dit en français :",
+  "La subordonnée relative",
+  "La subordonnée complétive",
+  "La proposition principale",
+  "La proposition indépendante"
+ ],
+ [
+  "« الجملة التابعة المتممة » se dit en français :",
+  "La subordonnée complétive",
+  "La subordonnée relative",
+  "La proposition principale",
+  "La proposition juxtaposée"
+ ],
+ [
+  "Que complète la subordonnée relative ?",
+  "Un nom ou un pronom appelé antécédent",
+  "Un verbe de la proposition principale",
+  "Un adjectif appelé antécédent",
+  "Une conjonction de subordination"
+ ],
+ [
+  "Comment appelle-t-on le nom ou le pronom complété par la subordonnée relative ?",
+  "L'antécédent",
+  "Le complément",
+  "Le sujet",
+  "La conjonction"
+ ],
+ [
+  "Qu'apporte la subordonnée relative ?",
+  "Des informations supplémentaires sur le nom ou le pronom",
+  "Des informations supplémentaires sur le verbe",
+  "Une opinion sur le verbe principal",
+  "Un ordre au lecteur"
+ ],
+ [
+  "Par quoi est introduite la subordonnée relative ?",
+  "Par un pronom relatif",
+  "Par la conjonction « que » uniquement",
+  "Par un adverbe",
+  "Par un verbe d'opinion"
+ ],
+ [
+  "Quel groupe contient uniquement des pronoms relatifs ?",
+  "Qui – que – dont – où",
+  "Qui – que – car – où",
+  "Qui – mais – dont – où",
+  "Que – donc – dont – et"
+ ],
+ [
+  "Dans « J'aime les livres qui racontent des aventures », quel est l'antécédent ?",
+  "Les livres",
+  "Racontent",
+  "Des aventures",
+  "J'aime"
+ ],
+ [
+  "Dans « J'aime les livres qui racontent des aventures », quel est le pronom relatif ?",
+  "Qui",
+  "Que",
+  "Dont",
+  "Où"
+ ],
+ [
+  "Dans « J'aime les livres qui racontent des aventures », quelle est la subordonnée relative ?",
+  "Qui racontent des aventures",
+  "J'aime les livres",
+  "Les livres qui",
+  "Racontent des aventures"
+ ],
+ [
+  "Dans « J'aime les livres qui racontent des aventures », quelle est la proposition principale ?",
+  "J'aime les livres",
+  "Qui racontent des aventures",
+  "Les livres qui racontent",
+  "Des aventures"
+ ],
+ [
+  "Dans « Je veux lire le roman que j'ai acheté hier », quel est l'antécédent ?",
+  "Le roman",
+  "Hier",
+  "J'ai acheté",
+  "Je veux lire"
+ ],
+ [
+  "Dans « Je veux lire le roman que j'ai acheté hier », quel est le pronom relatif ?",
+  "Que",
+  "Qui",
+  "Dont",
+  "Où"
+ ],
+ [
+  "Dans « Je veux lire le roman que j'ai acheté hier », quelle est la subordonnée relative ?",
+  "Que j'ai acheté hier",
+  "Je veux lire le roman",
+  "Le roman que",
+  "Lire le roman"
+ ],
+ [
+  "Dans « Je veux lire le roman que j'ai acheté hier », quelle est la proposition principale ?",
+  "Je veux lire le roman",
+  "Que j'ai acheté hier",
+  "J'ai acheté hier",
+  "Le roman que j'ai acheté"
+ ],
+ [
+  "Que signifie l'abréviation « P.S.R » ?",
+  "Proposition subordonnée relative",
+  "Proposition subordonnée complétive",
+  "Proposition principale relative",
+  "Proposition simple relative"
+ ],
+ [
+  "Que signifie l'abréviation « P.P » ?",
+  "Proposition principale",
+  "Proposition passive",
+  "Proposition subordonnée",
+  "Pronom personnel"
+ ],
+ [
+  "Que signifie l'abréviation « P.C » ?",
+  "Proposition subordonnée complétive",
+  "Proposition subordonnée relative",
+  "Proposition circonstancielle",
+  "Proposition coordonnée"
+ ],
+ [
+  "Que complète généralement la subordonnée complétive ?",
+  "Un verbe de la proposition principale",
+  "Un nom appelé antécédent",
+  "Un adjectif de la proposition principale",
+  "Un pronom relatif"
+ ],
+ [
+  "Qu'exprime souvent la subordonnée complétive ?",
+  "Ce que quelqu'un pense, croit, dit, souhaite ou espère",
+  "Ce que quelqu'un voit, entend ou sent",
+  "Des informations supplémentaires sur un nom",
+  "La cause d'un événement passé"
+ ],
+ [
+  "Par quoi est introduite la subordonnée complétive ?",
+  "Par la conjonction de subordination « que »",
+  "Par un pronom relatif",
+  "Par la conjonction « car »",
+  "Par l'adverbe « où »"
+ ],
+ [
+  "Dans « Je pense que ce héros est courageux », quelle est la proposition principale ?",
+  "Je pense",
+  "Que ce héros est courageux",
+  "Ce héros est courageux",
+  "Je pense que ce héros"
+ ],
+ [
+  "Dans « Je pense que ce héros est courageux », quelle est la subordonnée complétive ?",
+  "Que ce héros est courageux",
+  "Je pense",
+  "Ce héros",
+  "Je pense que"
+ ],
+ [
+  "Dans « Nous souhaitons que la paix règne dans le monde », quelle est la proposition principale ?",
+  "Nous souhaitons",
+  "Que la paix règne dans le monde",
+  "La paix règne dans le monde",
+  "Nous souhaitons que la paix"
+ ],
+ [
+  "Dans « Nous souhaitons que la paix règne dans le monde », quelle est la subordonnée complétive ?",
+  "Que la paix règne dans le monde",
+  "Nous souhaitons",
+  "La paix règne",
+  "Dans le monde"
+ ],
+ [
+  "Dans « Nous souhaitons que la paix règne dans le monde », que complète « que la paix règne dans le monde » ?",
+  "Le verbe « souhaitons »",
+  "Le nom « paix »",
+  "Le nom « monde »",
+  "Le pronom « nous »"
+ ],
+ [
+  "Dans « Je pense que ce héros est courageux », « que » est :",
+  "Une conjonction de subordination",
+  "Un pronom relatif",
+  "Un adverbe",
+  "Un nom"
+ ],
+ [
+  "Dans « Je veux lire le roman que j'ai acheté hier », « que » est :",
+  "Un pronom relatif",
+  "Une conjonction de subordination",
+  "Un adverbe",
+  "Un verbe"
+ ],
+ [
+  "Quelle phrase contient une subordonnée relative ?",
+  "J'aime les films qui font rire",
+  "Je pense que ce film est drôle",
+  "Nous espérons que tu viendras",
+  "Il dit que tout va bien"
+ ],
+ [
+  "Quelle phrase contient une subordonnée complétive ?",
+  "Je crois que tu as raison",
+  "J'aime les films qui font rire",
+  "Voici le livre que j'ai acheté",
+  "C'est la ville où je suis né"
+ ],
+ [
+  "Quelle est la différence entre « qui » et « que » dans ces phrases : « les livres qui racontent » et « je pense que » ?",
+  "« Qui » est un pronom relatif ; « que » est une conjonction de subordination",
+  "« Qui » est une conjonction ; « que » est un pronom relatif",
+  "Les deux sont des pronoms relatifs",
+  "Les deux sont des conjonctions de subordination"
+ ]
+];
+f13.rec=[
+ [
+  "Subordonnée relative : définition",
+  "La subordonnée relative complète un nom ou un pronom appelé antécédent et apporte des informations supplémentaires sur ce nom ou ce pronom.",
+  [
+   "complète",
+   "nom",
+   "pronom",
+   "antécédent",
+   "informations",
+   "supplémentaires"
+  ]
+ ],
+ [
+  "Subordonnée relative : introduction",
+  "Elle est introduite par un pronom relatif : qui, que, dont, où.",
+  [
+   "introduite",
+   "pronom",
+   "relatif",
+   "qui",
+   "que",
+   "dont",
+   "où"
+  ]
+ ],
+ [
+  "Exemple 1 (relative)",
+  "J'aime les livres qui racontent des aventures. « les livres » = antécédent ; « qui racontent des aventures » = P.S.R.",
+  [
+   "livres",
+   "antécédent",
+   "racontent",
+   "aventures",
+   "psr"
+  ]
+ ],
+ [
+  "Exemple 2 (relative)",
+  "Je veux lire le roman que j'ai acheté hier. « Je veux lire le roman » = P.P ; « que j'ai acheté hier » = P.S.R.",
+  [
+   "roman",
+   "acheté",
+   "hier",
+   "pp",
+   "psr"
+  ]
+ ],
+ [
+  "Subordonnée complétive : définition",
+  "La subordonnée complétive complète généralement un verbe de la proposition principale.",
+  [
+   "complète",
+   "généralement",
+   "verbe",
+   "proposition",
+   "principale"
+  ]
+ ],
+ [
+  "Subordonnée complétive : sens",
+  "Elle exprime souvent ce que quelqu'un pense, croit, dit, souhaite ou espère.",
+  [
+   "exprime",
+   "pense",
+   "croit",
+   "dit",
+   "souhaite",
+   "espère"
+  ]
+ ],
+ [
+  "Subordonnée complétive : introduction",
+  "Elle est introduite par la conjonction de subordination « que ».",
+  [
+   "introduite",
+   "conjonction",
+   "subordination",
+   "que"
+  ]
+ ],
+ [
+  "Exemple 1 (complétive)",
+  "Je pense que ce héros est courageux. « Je pense » = P.P ; « que ce héros est courageux » = P.C.",
+  [
+   "pense",
+   "héros",
+   "courageux",
+   "pp",
+   "pc"
+  ]
+ ],
+ [
+  "Exemple 2 (complétive)",
+  "Nous souhaitons que la paix règne dans le monde. « Nous souhaitons » = P.P ; « que la paix règne dans le monde » = P.C.",
+  [
+   "souhaitons",
+   "paix",
+   "règne",
+   "monde",
+   "pp",
+   "pc"
+  ]
+ ]
+];
+f13.tr=[
+ "«الجملة التابعة الموصولة» كيف نقولها بالفرنسية؟",
+ "«الجملة التابعة المتممة» كيف نقولها بالفرنسية؟",
+ "ماذا تُتمّم الجملة التابعة الموصولة؟",
+ "ماذا نسمي الاسم أو الضمير الذي تتممه الجملة التابعة الموصولة؟",
+ "ماذا تضيف الجملة التابعة الموصولة؟",
+ "بماذا تُقدَّم الجملة التابعة الموصولة؟",
+ "أي مجموعة تضم ضمائر الوصل فقط؟",
+ "في الجملة، ما هو المرجع (antécédent)؟",
+ "في الجملة، ما هو ضمير الوصل؟",
+ "في الجملة، ما هي الجملة التابعة الموصولة؟",
+ "في الجملة، ما هي الجملة الرئيسية؟",
+ "في الجملة، ما هو المرجع (antécédent)؟",
+ "في الجملة، ما هو ضمير الوصل؟",
+ "في الجملة، ما هي الجملة التابعة الموصولة؟",
+ "في الجملة، ما هي الجملة الرئيسية؟",
+ "ماذا يعني الاختصار P.S.R؟",
+ "ماذا يعني الاختصار P.P؟",
+ "ماذا يعني الاختصار P.C؟",
+ "ماذا تُتمّم الجملة التابعة المتممة عادةً؟",
+ "ماذا تعبّر عنه الجملة التابعة المتممة غالبًا؟",
+ "بماذا تُقدَّم الجملة التابعة المتممة؟",
+ "في الجملة، ما هي الجملة الرئيسية؟",
+ "في الجملة، ما هي الجملة التابعة المتممة؟",
+ "في الجملة، ما هي الجملة الرئيسية؟",
+ "في الجملة، ما هي الجملة التابعة المتممة؟",
+ "ماذا تتمم الجملة التابعة في الجملة السابقة؟",
+ "ما نوع الكلمة «que» في الجملة السابقة؟",
+ "ما نوع الكلمة «que» في الجملة السابقة؟",
+ "أي جملة تحتوي على جملة تابعة موصولة؟",
+ "أي جملة تحتوي على جملة تابعة متممة؟",
+ "ما الفرق بين «qui» و«que» في هذين المثالين؟"
+];
+f13.pg=2;
 f11.pg=1;f12.pg=1;
 /* عدد صفحات كل ملخص (صور مضغوطة pdf/<المعرّف>-<رقم>.jpg) */
-const PGN={"a11": 3, "a12": 2, "a13": 3, "c11": 3, "c12": 5, "f11": 1, "f12": 1, "g11": 2, "g12": 5, "h11": 3, "h12": 3, "i01": 4, "i02": 4, "m1-01": 2, "m1-02": 4, "p11": 2, "s10": 1, "s10-2": 1, "s10-3": 2};
+const PGN={"a11": 3, "a12": 2, "a13": 3, "c11": 3, "c12": 5, "f11": 1, "f12": 1, "g11": 2, "g12": 5, "h11": 3, "h12": 3, "i01": 4, "i02": 4, "m1-01": 2, "m1-02": 4, "p11": 2, "s10": 1, "s10-2": 1, "s10-3": 2, "s10-4": 2, "s10-5": 2, "s10-6": 2, "f13": 2};
 SUBJECTS.forEach(s=>s.sections.forEach(c=>c.lessons.forEach(l=>{if(PGN[l.id])l.pg=PGN[l.id]})));
 
 /* جدول المراجعة الأسبوعي (نصف ساعة حفظ في اليوم، يتكرر كل أسبوع). المفتاح: رقم اليوم (0=الأحد ... 6=السبت). الرياضيات والفيزياء والعلوم خارج البرنامج. غيّر الجدول من هنا. */
