@@ -86,6 +86,7 @@ function review(s,subset){
   };
   const done=(timeUp)=>{
     if(over)return;over=true;clearInterval(revTimer);
+    if(timed)revMarkDone(s.id);
     const total=right+wrong.length,pct=total?Math.round(right/total*100):0;
     addXp(gain);
     app.innerHTML=`<div class="res"><div class="big">${timeUp?'⏰':pct>=70?'🏆':'💪'}</div><h2>${pct}%</h2><p>${timeUp?'انتهى الوقت · ':''}${right} صحيحة من ${total} سؤالًا أُجيب عنه · ‎+${gain} نقطة</p><p class="msg">${pct>=90?'ذاكرتك قوية، استمر على المراجعة اليومية!':pct>=70?'جيد جدًا، راجع الأخطاء لتثبيتها.':'لا بأس، المراجعة اليومية هي التي تثبّت الحفظ — أعد الأخطاء الآن.'}</p><div class="acts">${wrong.length?'<div class="btn alt" id="re">أعد الأخطاء</div>':''}<div class="btn" id="again">مراجعة جديدة 🔄</div></div><div class="acts"><div class="btn alt" id="bk">رجوع للمادة</div></div></div>`;

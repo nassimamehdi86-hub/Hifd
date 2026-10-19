@@ -45,7 +45,7 @@ function home(){
   const t=st(),p=prog(),total=Object.values(p).reduce((x,r)=>x+stars(r.pct),0);
   app.innerHTML=`<div class="hero"><div class="hi">أهلًا ${esc(name)} 👋<small>هيا نحفظ ونجمع النجوم!</small></div><div class="chips"><span>🔥 ${t.streak} يوم</span><span>⭐ ${total}</span><span>🏅 مستوى ${lvl(t.xp)}</span></div><div class="xp"><i style="width:${t.xp%100}%"></i></div></div>${todayBanner()}${standalone()?'':'<div class="btn inst" id="inst">📲 ثبّت التطبيق على هاتفك</div>'}<div class="tiles">`+
   SUBJECTS.map(s=>{const ls=s.sections.flatMap(x=>x.lessons),d=ls.filter(l=>p[l.id]&&p[l.id].pct>=70).length;
-    return `<div class="tile" style="--c:${s.color}" data-id="${s.id}"><span class="em">${ICON[s.id]}</span><b>${s.name}</b><small>${d} / ${ls.length} دروس${chDone(s.id)?' · ✅ حصة اليوم':''}</small>${(todaySubj()||{}).id===s.id?'<small>📌 مادة اليوم</small>':''}</div>`}).join('')+'</div><div class="lnk" id="adm" translate="no">دخول الأستاذ</div>';
+    return `<div class="tile" style="--c:${s.color}" data-id="${s.id}"><span class="em">${ICON[s.id]}</span><b>${s.name}</b><small>${d} / ${ls.length} دروس${revDoneToday(s.id)?' · ✅ راجعتها اليوم':''}</small>${(todaySubj()||{}).id===s.id?'<small>📌 مادة اليوم</small>':''}</div>`}).join('')+'</div><div class="lnk" id="adm" translate="no">دخول الأستاذ</div>';
   if($('#inst'))$('#inst').onclick=install;
   if($('#today')){const ts=SUBJECTS.find(x=>x.id===$('#today').dataset.id);$('#today').onclick=()=>go(()=>subject(ts),ts.name,ts.color)}
   todayToast();
@@ -55,9 +55,8 @@ function home(){
 function subject(s){
   const p=prog();
   const rn=revN(s);
-  app.innerHTML=chronoCard(s)+(rn?`<div class="acts"><div class="btn" id="rv">🔁 مراجعة يومية · ${REV_MIN} دقيقة (${rn} سؤالًا)</div></div><p class="hint">أسئلة استرجاع من كل دروس المادة · خياران فقط · صيغة السؤال تتغيّر كل يوم · يبدأ العدّاد عند الضغط، وتتوزع الأسئلة على الدروس لتناسب ربع ساعة</p>`:'')+s.sections.map(sec=>`<h2>${sec.name}</h2><div class="path">`+sec.lessons.map((l,i)=>{const r=p[l.id];
+  app.innerHTML=(rn?`<div class="acts"><div class="btn" id="rv">🔁 مراجعة يومية · ${REV_MIN} دقيقة (${rn} سؤالًا)</div></div><p class="hint">أسئلة استرجاع من كل دروس المادة · خياران فقط · صيغة السؤال تتغيّر كل يوم · يبدأ العدّاد عند الضغط، وتتوزع الأسئلة على الدروس لتناسب ربع ساعة</p>`:'')+s.sections.map(sec=>`<h2>${sec.name}</h2><div class="path">`+sec.lessons.map((l,i)=>{const r=p[l.id];
     return `<div class="node ${i%2?'r':'l'}" data-l="${l.id}"><span class="dot ${r&&r.pct>=70?'done':''}">${i+1}</span><div><b dir="auto">${l.title}</b><small>${starsHtml(stars(r?r.pct:0))}</small></div></div>`}).join('')+'</div>').join('');
-  chronoBind(s);
   if($('#rv'))$('#rv').onclick=()=>go(()=>review(s),'مراجعة '+s.name,s.color);
   app.querySelectorAll('.node').forEach(e=>e.onclick=()=>{
     const l=s.sections.flatMap(x=>x.lessons).find(x=>x.id==e.dataset.l);go(()=>lesson(s,l),l.title,s.color)});
