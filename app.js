@@ -54,9 +54,11 @@ function home(){
 }
 function subject(s){
   const p=prog();
-  app.innerHTML=chronoCard(s)+s.sections.map(sec=>`<h2>${sec.name}</h2><div class="path">`+sec.lessons.map((l,i)=>{const r=p[l.id];
+  const rn=revN(s);
+  app.innerHTML=chronoCard(s)+(rn?`<div class="acts"><div class="btn" id="rv">🔁 مراجعة يومية · ${REV_MIN} دقيقة (${rn} سؤالًا)</div></div><p class="hint">أسئلة استرجاع من كل دروس المادة · خياران فقط · صيغة السؤال تتغيّر كل يوم · يبدأ العدّاد عند الضغط، وتتوزع الأسئلة على الدروس لتناسب ربع ساعة</p>`:'')+s.sections.map(sec=>`<h2>${sec.name}</h2><div class="path">`+sec.lessons.map((l,i)=>{const r=p[l.id];
     return `<div class="node ${i%2?'r':'l'}" data-l="${l.id}"><span class="dot ${r&&r.pct>=70?'done':''}">${i+1}</span><div><b dir="auto">${l.title}</b><small>${starsHtml(stars(r?r.pct:0))}</small></div></div>`}).join('')+'</div>').join('');
   chronoBind(s);
+  if($('#rv'))$('#rv').onclick=()=>go(()=>review(s),'مراجعة '+s.name,s.color);
   app.querySelectorAll('.node').forEach(e=>e.onclick=()=>{
     const l=s.sections.flatMap(x=>x.lessons).find(x=>x.id==e.dataset.l);go(()=>lesson(s,l),l.title,s.color)});
 }
