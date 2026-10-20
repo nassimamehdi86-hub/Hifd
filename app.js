@@ -299,14 +299,25 @@ async function admin(){
     });
     const avg=Object.entries(by).map(([n,a])=>{const s=st2[n]||{at:0,co:0,ls:new Set()};return `<tr><td>${esc(n)}</td><td>${s.ls.size}</td><td>${s.at}</td><td>${Math.max(0,s.at-s.ls.size)}</td><td>${s.co}</td><td>${Math.round(a.reduce((x,y)=>x+y,0)/a.length)}%</td></tr>`}).join('');
     const det=Object.values(ls2).sort((x,y)=>x.n.localeCompare(y.n,'ar')).map(l=>`<tr><td>${esc(l.n)}</td><td>${esc(l.t)}</td><td>${l.at}</td><td>${Math.max(0,l.at-1)}</td><td>${l.co}</td><td>${l.best}%</td></tr>`).join('');
-    const lf=rows.filter(r=>r.kind==='left'),leftT=lf.length?`<h2>🚨 مغادرة الصفحة أثناء الاختبار (${lf.length})</h2><div class="tw"><table><tr><th>التلميذ</th><th>المادة</th><th>الدرس</th><th>أثناء</th><th>التاريخ</th></tr>${lf.map(r=>`<tr><td>${esc(r.student)}</td><td>${esc(r.subject)}</td><td>${esc(r.lesson||r.lessonId)}</td><td>${r.mode==='quiz'?'الاختيارات':'التسميع'}</td><td>${r.at?r.at.toDate().toLocaleString('ar'):''}</td></tr>`).join('')}</table></div>`:'';
+    const lf=rows.filter(r=>r.kind==='left'),leftT=lf.length?`<details class="fold"><summary>🚨 مغادرة الصفحة أثناء الاختبار (${lf.length})</summary><div class="tw"><table><tr><th>التلميذ</th><th>المادة</th><th>الدرس</th><th>أثناء</th><th>التاريخ</th></tr>${lf.map(r=>`<tr><td>${esc(r.student)}</td><td>${esc(r.subject)}</td><td>${esc(r.lesson||r.lessonId)}</td><td>${r.mode==='quiz'?'الاختيارات':'التسميع'}</td><td>${r.at?r.at.toDate().toLocaleString('ar'):''}</td></tr>`).join('')}</table></div></details>`:'';
     const rb={};rows.filter(r=>r.kind==='recite').forEach(r=>{const k=r.student+'|'+r.lessonId,o=rb[k]??={n:r.student,t:r.lesson||r.lessonId,c:0,best:0};o.c++;o.best=Math.max(o.best,r.percent||0)});
     const recT=Object.values(rb).length?`<h2>نتائج التسميع</h2><div class="tw"><table><tr><th>التلميذ</th><th>الدرس</th><th>المحاولات</th><th>الأفضل</th></tr>${Object.values(rb).sort((x,y)=>x.n.localeCompare(y.n,'ar')).map(o=>`<tr><td>${esc(o.n)}</td><td>${esc(o.t)}</td><td>${o.c}</td><td>${o.best}%</td></tr>`).join('')}</table></div>`:'';
-    app.innerHTML=`<div class="acts"><div class="btn alt" id="out">خروج</div></div>${leftT}<h2>المعدل لكل تلميذ</h2><div class="tw"><table><tr><th>التلميذ</th><th>الدروس</th><th>المحاولات</th><th>إعادة البدء</th><th>التصحيحات</th><th>المعدل (أفضل نتيجة لكل درس)</th></tr>${avg}</table></div><h2>التفصيل حسب الدرس</h2><div class=\"tw\"><table><tr><th>التلميذ</th><th>الدرس</th><th>المحاولات</th><th>إعادة البدء</th><th>التصحيحات</th><th>الأفضل</th></tr>${det}</table></div>
+    app.innerHTML=`<div class="acts"><div class="btn alt" id="out">خروج</div><div class="btn danger" id="rst">🗑 تصفير جميع النتائج</div></div><h2>المعدل لكل تلميذ</h2><div class="tw"><table><tr><th>التلميذ</th><th>الدروس</th><th>المحاولات</th><th>إعادة البدء</th><th>التصحيحات</th><th>المعدل (أفضل نتيجة لكل درس)</th></tr>${avg}</table></div><h2>التفصيل حسب الدرس</h2><div class=\"tw\"><table><tr><th>التلميذ</th><th>الدرس</th><th>المحاولات</th><th>إعادة البدء</th><th>التصحيحات</th><th>الأفضل</th></tr>${det}</table></div>
     ${recT}
-    <h2>آخر النتائج</h2><div class="tw"><table><tr><th>التلميذ</th><th>المادة</th><th>الدرس</th><th>النتيجة</th><th>النوع</th><th>التاريخ</th><th></th></tr>`+
-    rows.map(r=>`<tr><td>${esc(r.student)}</td><td>${esc(r.subject)}</td><td>${esc(r.lessonId)}</td><td>${r.percent}%</td><td>${r.kind==='correction'?'بعد التصحيح':r.kind==='recite'?'تسميع':r.kind==='left'?'🚨 غادر الصفحة':'محاولة'}</td><td>${r.at?r.at.toDate().toLocaleString('ar'):''}</td><td><a data-d="${r.id}" style="cursor:pointer">🗑</a></td></tr>`).join('')+'</table></div>';
+    <details class="fold"><summary>آخر النتائج (${rows.length})</summary><div class="tw"><table><tr><th>التلميذ</th><th>المادة</th><th>الدرس</th><th>النتيجة</th><th>النوع</th><th>التاريخ</th><th></th></tr>`+
+    rows.map(r=>`<tr><td>${esc(r.student)}</td><td>${esc(r.subject)}</td><td>${esc(r.lessonId)}</td><td>${r.percent}%</td><td>${r.kind==='correction'?'بعد التصحيح':r.kind==='recite'?'تسميع':r.kind==='left'?'🚨 غادر الصفحة':'محاولة'}</td><td>${r.at?r.at.toDate().toLocaleString('ar'):''}</td><td><a data-d="${r.id}" style="cursor:pointer">🗑</a></td></tr>`).join('')+'</table></div></details>'+leftT;
     $('#out').onclick=()=>{unlocked=false;hist=hist.slice(0,1);show()};
+    $('#rst').onclick=async()=>{
+      if(!confirm('سيتم حذف جميع نتائج كل التلاميذ نهائيًا ولا يمكن التراجع. هل تريد المتابعة؟'))return;
+      if(!confirm('تأكيد أخير: تصفير كل النتائج من الأول؟'))return;
+      app.innerHTML='<p class="hint">جارٍ التصفير…</p>';
+      try{
+        const all=await db.collection('results').get();
+        for(let i=0;i<all.docs.length;i+=400){const b=db.batch();all.docs.slice(i,i+400).forEach(d=>b.delete(d.ref));await b.commit()}
+        alert('تم تصفير جميع النتائج ✅');
+      }catch(e){alert('تعذّر التصفير. تحقق من قواعد Firestore (allow delete).')}
+      admin();
+    };
     app.querySelectorAll('[data-d]').forEach(a=>a.onclick=async()=>{if(confirm('حذف هذه النتيجة؟')){await db.collection('results').doc(a.dataset.d).delete();admin()}});
   }catch(e){app.innerHTML='<div class="res"><p>تعذّر التحميل. تحقق من القواعد ومن تفعيل الدخول بالبريد في Firebase.</p></div>'}
 }
