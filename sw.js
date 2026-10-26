@@ -1,5 +1,5 @@
 /* الشبكة أولًا: التحديثات على GitHub تظهر فورًا، والنسخة المخزّنة تعمل عند انقطاع الإنترنت */
-const C='hifz-v6';
+const C='hifz-v7';
 self.addEventListener('install',e=>self.skipWaiting());
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{
