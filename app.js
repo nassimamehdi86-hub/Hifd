@@ -65,12 +65,13 @@ const videoHtml=([id,s=0,e=0])=>/\.mp4$/.test(id)?`<h2>🎬 شرح الدرس ب
 function lesson(s,l){
   const r=prog()[l.id],ex=(window.EXAMS||[]).filter(e=>[].concat(e.l).includes(l.id));
   app.innerHTML=`<h2 dir="auto">${l.title}</h2>${l.qs.length?`<div class="acts"><div class="btn" id="go">ابدأ الاختبار (${l.qs.length} سؤالًا)</div></div>${(()=>{const sv=qload();return sv&&sv.lid===l.id?`<div class="acts"><div class="btn alt" id="rs">⏯ تابع من حيث توقفت (${sv.i+1} / ${sv.idx.length})</div></div>`:''})()}${r?`<p class="hint">آخر نتيجة: ${r.last??r.pct}% · أفضل نتيجة: ${r.pct}%</p>`:''}`:'<p class="hint">لم تُضف أسئلة هذا الدرس بعد.</p>'}
-  ${recBtn(l)}${l.acts?`<div class="acts"><div class="btn alt" id="ac">✏️ الأنشطة والتمارين (${l.acts.reduce((n,g)=>n+g.items.length,0)})</div></div>`:''}
+  ${recBtn(l)}${wsBtn(l)}${l.acts?`<div class="acts"><div class="btn alt" id="ac">✏️ الأنشطة والتمارين (${l.acts.reduce((n,g)=>n+g.items.length,0)})</div></div>`:''}
   ${l.v?videoHtml(l.v):''}
   ${l.pg?'<div id="pdf" class="pdf"></div>':''}<div id="exb"></div>`;
   if(l.qs.length)$('#go').onclick=()=>go(()=>quiz(s,l),l.title,s.color);
   if($('#rs'))$('#rs').onclick=()=>go(()=>quiz(s,l,true),l.title,s.color);
   if($('#rc'))$('#rc').onclick=()=>go(()=>recite(s,l),l.title,s.color);
+  if($('#ws'))$('#ws').onclick=()=>printSheet(s,l);
   if($('#ac'))$('#ac').onclick=()=>go(()=>activities(s,l),l.title,s.color);
   const sx=list=>{const b=$('#exb');if(!list.length||!b)return;const was=$('#exW')&&!$('#exW').hidden;b.innerHTML=examHtml(list);bindAns(b);
     const w=$('#exW'),t=$('#exT'),lab=t.textContent.replace(/ [▾▴]$/,'');
