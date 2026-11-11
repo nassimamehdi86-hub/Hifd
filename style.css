@@ -110,3 +110,6 @@ textarea{width:100%;padding:12px 16px;border:3px solid var(--c);border-radius:20
 
 .btn.danger{background:#E11D48;color:#fff}
 .fold{margin:22px 0 0}.fold>summary{cursor:pointer;list-style:none;padding:12px 16px;border-radius:22px;background:#fff;color:var(--ink);font:400 22px 'Lalezar','Tajawal',sans-serif;box-shadow:0 5px 0 rgba(42,31,92,.15)}.fold>summary::-webkit-details-marker{display:none}.fold>summary::after{content:' ▾'}.fold[open]>summary::after{content:' ▴'}.fold>.tw{margin-top:12px}
+/* أزرار طباعة اختبارات الشهادة: شبكة بعمودين */
+#wsx{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#wsx .btn{font-size:19px;padding:10px 6px}

@@ -36,7 +36,7 @@ const wsYears=s=>[...new Set(wsExams(s).map(e=>e.y))].sort((a,b)=>b-a);
 function wsExamBtns(s){
   const ys=wsYears(s);if(!ys.length)return '';
   return `<h2>🖨️ طباعة اختبارات الشهادة</h2><p class="hint">اختر السنة لطباعة الاختبار كاملًا (أو حفظه PDF) مع ترك مكان للإجابة تحت كل سؤال.</p><div class="acts" id="wsx">`+
-    ys.map(y=>`<div class="btn alt" data-wy="${y}">🖨️ اختبار ${y} (${wsExams(s).filter(e=>e.y===y).length} تمارين)</div>`).join('')+'</div>';
+    ys.map(y=>`<div class="btn alt" data-wy="${y}">🖨️ اختبار ${y}<br><small style="font:600 13px Tajawal;opacity:.8">${wsExams(s).filter(e=>e.y===y).length} تمارين</small></div>`).join('')+'</div>';
 }
 function wsBindExams(s,root){
   root.querySelectorAll('[data-wy]').forEach(b=>b.onclick=()=>printExam(s,+b.dataset.wy));
@@ -100,6 +100,7 @@ function printExam(s,y){
   .ws-q{break-inside:avoid;page-break-inside:avoid;margin-bottom:1.5mm}
   .ws-qt{font-size:10pt;font-weight:700;line-height:1.2}
   .ws-ln{height:6mm;border-bottom:1px solid #999}
+  .ws-yr{font-size:12pt;font-weight:800;text-align:center;background:#eee;margin:2mm 0 1.5mm;padding:.5mm 0;break-after:avoid;page-break-after:avoid}
   .ws-ex{margin-bottom:3mm}
   .ws-eh{font-size:11pt;font-weight:800;border-bottom:1px solid #000;margin-bottom:1mm;break-after:avoid;page-break-after:avoid}
   .ws-body{white-space:pre-line;font-size:10pt;font-weight:600;line-height:1.35;margin:1mm 0 .5mm;break-inside:avoid;page-break-inside:avoid}
@@ -107,3 +108,29 @@ function printExam(s,y){
 }`;
   document.head.append(st);
 })();
+
+/* طباعة تمرين واحد من تمارين الشهادة (من صفحة الدرس) مع مكان للإجابة تحت كل سؤال */
+function printExercise(s,l,e){
+  if(!e)return;
+  const old=document.getElementById('wsheet');if(old)old.remove();
+  const lat=!/[\u0600-\u06FF]/.test(String(e.t));
+  const stu=(typeof name==='string'&&name)||'';
+  const el=document.createElement('div');el.id='wsheet';el.dir=lat?'ltr':'rtl';if(lat)el.lang='fr';
+  el.innerHTML=`<div class="ws-head"><div class="ws-t">تمرين من شهادة التعليم المتوسط — دورة ${esc(e.y)}</div><div class="ws-m">المادة: <b>${esc(s.name)}</b> &nbsp;·&nbsp; الدرس: <b>${esc(l.title)}</b></div>
+    <div class="ws-f"><span>الاسم: ${esc(stu)||'<i class="ws-b"></i>'}</span><span>التاريخ: <i class="ws-b"></i></span><span>العلامة: <i class="ws-b" style="min-width:20mm"></i></span></div></div>`+wsExamBlock(e,1,lat);
+  wsPrintEl(el,`تمرين ${s.name} ${e.y}`);
+}
+
+/* طباعة كل أسئلة الشهادة الخاصة بالدرس، مرتبة بالسنة، مع مكان للإجابة تحت كل سؤال */
+function printLessonExams(s,l,list){
+  if(!list||!list.length)return;
+  const old=document.getElementById('wsheet');if(old)old.remove();
+  const lat=!/[\u0600-\u06FF]/.test(list.map(e=>e.t).join(''));
+  const stu=(typeof name==='string'&&name)||'';
+  const ys=[...new Set(list.map(e=>e.y))].sort((x,y)=>y-x);
+  const el=document.createElement('div');el.id='wsheet';el.dir=lat?'ltr':'rtl';if(lat)el.lang='fr';
+  el.innerHTML=`<div class="ws-head"><div class="ws-t">أسئلة شهادة التعليم المتوسط</div><div class="ws-m">المادة: <b>${esc(s.name)}</b> &nbsp;·&nbsp; الدرس: <b>${esc(l.title)}</b></div>
+    <div class="ws-f"><span>الاسم: ${esc(stu)||'<i class="ws-b"></i>'}</span><span>التاريخ: <i class="ws-b"></i></span><span>العلامة: <i class="ws-b" style="min-width:20mm"></i></span></div></div>`+
+    ys.map(y=>`<div class="ws-yr">شهادة ${esc(y)}</div>`+list.filter(e=>e.y===y).map((e,i)=>wsExamBlock(e,i+1,lat)).join('')).join('');
+  wsPrintEl(el,`أسئلة الشهادة - ${l.title}`);
+}

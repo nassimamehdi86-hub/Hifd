@@ -58,7 +58,6 @@ function subject(s){
   app.innerHTML=(rn?`<div class="acts"><div class="btn" id="rv">🔁 مراجعة يومية · ${REV_MIN} دقيقة (${rn} سؤالًا)</div></div><p class="hint">أسئلة استرجاع من كل دروس المادة · خياران فقط · صيغة السؤال تتغيّر كل يوم · يبدأ العدّاد عند الضغط، وتتوزع الأسئلة على الدروس لتناسب ربع ساعة</p>`:'')+s.sections.map(sec=>`<h2>${sec.name}</h2><div class="path">`+sec.lessons.map((l,i)=>{const r=p[l.id];
     return `<div class="node ${i%2?'r':'l'}" data-l="${l.id}"><span class="dot ${r&&r.pct>=70?'done':''}">${i+1}</span><div><b dir="auto">${l.title}</b><small>${starsHtml(stars(r?r.pct:0))}</small></div></div>`}).join('')+'</div>').join('');
   if($('#rv'))$('#rv').onclick=()=>go(()=>review(s),'مراجعة '+s.name,s.color);
-  if(typeof wsExamBtns==='function'){const w=document.createElement('div');w.innerHTML=wsExamBtns(s);if(w.children.length){app.append(...w.children);wsBindExams(s,app)}}
   app.querySelectorAll('.node').forEach(e=>e.onclick=()=>{
     const l=s.sections.flatMap(x=>x.lessons).find(x=>x.id==e.dataset.l);go(()=>lesson(s,l),l.title,s.color)});
 }
@@ -74,7 +73,7 @@ function lesson(s,l){
   if($('#rc'))$('#rc').onclick=()=>go(()=>recite(s,l),l.title,s.color);
   if($('#ws'))$('#ws').onclick=()=>printSheet(s,l);
   if($('#ac'))$('#ac').onclick=()=>go(()=>activities(s,l),l.title,s.color);
-  const sx=list=>{const b=$('#exb');if(!list.length||!b)return;const was=$('#exW')&&!$('#exW').hidden;b.innerHTML=examHtml(list);bindAns(b);
+  const sx=list=>{const b=$('#exb');if(!list.length||!b)return;const was=$('#exW')&&!$('#exW').hidden;b.innerHTML=examHtml(list);bindAns(b);$('#exP').onclick=()=>printLessonExams(s,l,list);b.querySelectorAll('[data-pe]').forEach(x=>x.onclick=()=>{const[y,i]=x.dataset.pe.split('-');printExercise(s,l,list.filter(e=>e.y==y)[+i])});
     const w=$('#exW'),t=$('#exT'),lab=t.textContent.replace(/ [▾▴]$/,'');
     const set=o=>{w.hidden=!o;t.textContent=lab+(o?' ▴':' ▾')};set(was);t.onclick=()=>set(w.hidden)};
   sx(ex);
@@ -155,8 +154,8 @@ function activities(s,l){
 }
 function examHtml(ex){
   const ys=[...new Set(ex.map(e=>e.y))].sort((a,b)=>b-a),st='style="font:600 18px/1.9 Tajawal;white-space:pre-line"';
-  return `<div class="acts"><div class="btn alt" id="exT">📝 أسئلة شهادة التعليم المتوسط (${ex.length})</div></div><div id="exW" hidden><p class="hint">ورد هذا الدرس في ${ex.length} تمرينًا من شهادات: ${ys.join(' · ')}</p>`+
-  ys.map(y=>`<h2>شهادة ${y}</h2>`+ex.filter(e=>e.y===y).map((e,i)=>`<div class="qbox" ${st}>${esc(e.t)}</div><div class="acts"><div class="btn alt" data-a="${y}-${i}">أظهر الحل</div></div><div class="qbox" id="a${y}-${i}" hidden ${st}>${esc(e.a||'لم يُضف الحل بعد.')}</div>`).join('')).join('')+'</div>';
+  return `<div class="acts"><div class="btn alt" id="exT">📝 أسئلة شهادة التعليم المتوسط (${ex.length})</div><div class="btn" id="exP" style="flex:0 0 auto">🖨️ طباعة الكل</div></div><div id="exW" hidden><p class="hint">ورد هذا الدرس في ${ex.length} تمرينًا من شهادات: ${ys.join(' · ')}</p>`+
+  ys.map(y=>`<h2>شهادة ${y}</h2>`+ex.filter(e=>e.y===y).map((e,i)=>`<div class="qbox" ${st}>${esc(e.t)}</div><div class="acts"><div class="btn alt" data-a="${y}-${i}">أظهر الحل</div><div class="btn" data-pe="${y}-${i}">🖨️ طباعة</div></div><div class="qbox" id="a${y}-${i}" hidden ${st}>${esc(e.a||'لم يُضف الحل بعد.')}</div>`).join('')).join('')+'</div>';
 }
 function bindAns(root){root.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const a=$('#a'+b.dataset.a);a.hidden=!a.hidden;b.textContent=a.hidden?'أظهر الحل':'أخفِ الحل'})}
 /* صفحات الدرس كصور جاهزة (pdf/<id>-<n>.jpg): تظهر بدقة وخطوط سليمة على كل الهواتف؛ وإن فُقدت الصورة يعود العرض إلى PDF */
