@@ -61,7 +61,7 @@ function subject(s){
   app.querySelectorAll('.node').forEach(e=>e.onclick=()=>{
     const l=s.sections.flatMap(x=>x.lessons).find(x=>x.id==e.dataset.l);go(()=>lesson(s,l),l.title,s.color)});
 }
-const videoHtml=([id,s=0,e=0])=>/\.mp4$/.test(id)?`<h2>🎬 شرح الدرس بالفيديو</h2><div class="vid vloc"><video src="${id}" controls playsinline preload="metadata"></video></div>`:`<h2>🎬 شرح الدرس بالفيديو</h2><div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0${s?'&start='+s:''}${e?'&end='+e:''}" title="فيديو الدرس" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div><p class="hint"><a href="https://youtu.be/${id}${s?'?t='+s:''}" target="_blank" rel="noopener">إن لم يعمل الفيديو هنا، شاهده على يوتيوب</a></p>`;
+const videoHtml=([id,s=0,e=0])=>/\.mp4$/.test(id)?`<h2>🎬 شرح الدرس بالفيديو</h2><div class="vid vloc"><video src="${id}" controls playsinline preload="metadata"></video></div>`:`<h2>🎬 شرح الدرس بالفيديو</h2><div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0${s?'&start='+s:''}${e?'&end='+e:''}" title="فيديو الدرس" loading="lazy" allow="encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div><p class="hint"><a href="https://youtu.be/${id}${s?'?t='+s:''}" target="_blank" rel="noopener">إن لم يعمل الفيديو هنا، شاهده على يوتيوب</a></p>`;
 function lesson(s,l){
   const r=prog()[l.id],ex=(window.EXAMS||[]).filter(e=>[].concat(e.l).includes(l.id));
   app.innerHTML=`<h2 dir="auto">${l.title}</h2>${l.qs.length?`<div class="acts"><div class="btn" id="go">ابدأ الاختبار (${l.qs.length} سؤالًا)</div></div>${(()=>{const sv=qload();return sv&&sv.lid===l.id?`<div class="acts"><div class="btn alt" id="rs">⏯ تابع من حيث توقفت (${sv.i+1} / ${sv.idx.length})</div></div>`:''})()}${r?`<p class="hint">آخر نتيجة: ${r.last??r.pct}% · أفضل نتيجة: ${r.pct}%</p>`:''}`:'<p class="hint">لم تُضف أسئلة هذا الدرس بعد.</p>'}
@@ -73,7 +73,7 @@ function lesson(s,l){
   if($('#rc'))$('#rc').onclick=()=>go(()=>recite(s,l),l.title,s.color);
   if($('#ws'))$('#ws').onclick=()=>printSheet(s,l);
   if($('#ac'))$('#ac').onclick=()=>go(()=>activities(s,l),l.title,s.color);
-  const sx=list=>{const b=$('#exb');if(!list.length||!b)return;const was=$('#exW')&&!$('#exW').hidden;b.innerHTML=examHtml(list);bindAns(b);$('#exP').onclick=()=>printLessonExams(s,l,list);b.querySelectorAll('[data-pe]').forEach(x=>x.onclick=()=>{const[y,i]=x.dataset.pe.split('-');printExercise(s,l,list.filter(e=>e.y==y)[+i])});
+  const sx=list=>{const b=$('#exb');if(!list.length||!b)return;const was=$('#exW')&&!$('#exW').hidden;b.innerHTML=examHtml(list);bindAns(b);
     const w=$('#exW'),t=$('#exT'),lab=t.textContent.replace(/ [▾▴]$/,'');
     const set=o=>{w.hidden=!o;t.textContent=lab+(o?' ▴':' ▾')};set(was);t.onclick=()=>set(w.hidden)};
   sx(ex);
@@ -154,8 +154,8 @@ function activities(s,l){
 }
 function examHtml(ex){
   const ys=[...new Set(ex.map(e=>e.y))].sort((a,b)=>b-a),st='style="font:600 18px/1.9 Tajawal;white-space:pre-line"';
-  return `<div class="acts"><div class="btn alt" id="exT">📝 أسئلة شهادة التعليم المتوسط (${ex.length})</div><div class="btn" id="exP" style="flex:0 0 auto">🖨️ طباعة الكل</div></div><div id="exW" hidden><p class="hint">ورد هذا الدرس في ${ex.length} تمرينًا من شهادات: ${ys.join(' · ')}</p>`+
-  ys.map(y=>`<h2>شهادة ${y}</h2>`+ex.filter(e=>e.y===y).map((e,i)=>`<div class="qbox" ${st}>${esc(e.t)}</div><div class="acts"><div class="btn alt" data-a="${y}-${i}">أظهر الحل</div><div class="btn" data-pe="${y}-${i}">🖨️ طباعة</div></div><div class="qbox" id="a${y}-${i}" hidden ${st}>${esc(e.a||'لم يُضف الحل بعد.')}</div>`).join('')).join('')+'</div>';
+  return `<div class="acts"><div class="btn alt" id="exT">📝 أسئلة شهادة التعليم المتوسط (${ex.length})</div></div><div id="exW" hidden><p class="hint">ورد هذا الدرس في ${ex.length} تمرينًا من شهادات: ${ys.join(' · ')}</p>`+
+  ys.map(y=>`<h2>شهادة ${y}</h2>`+ex.filter(e=>e.y===y).map((e,i)=>`<div class="qbox" ${st}>${esc(e.t)}</div><div class="acts"><div class="btn alt" data-a="${y}-${i}">أظهر الحل</div></div><div class="qbox" id="a${y}-${i}" hidden ${st}>${esc(e.a||'لم يُضف الحل بعد.')}</div>`).join('')).join('')+'</div>';
 }
 function bindAns(root){root.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const a=$('#a'+b.dataset.a);a.hidden=!a.hidden;b.textContent=a.hidden?'أظهر الحل':'أخفِ الحل'})}
 /* صفحات الدرس كصور جاهزة (pdf/<id>-<n>.jpg): تظهر بدقة وخطوط سليمة على كل الهواتف؛ وإن فُقدت الصورة يعود العرض إلى PDF */
